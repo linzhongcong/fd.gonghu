@@ -45,7 +45,7 @@
           size="small"
         >
           <template slot-scope="{ row }" slot="companyName">
-            <p>{{ row.companyName }}</p>
+            <AccountManagementDetail :rowData="row" />
           </template>
           <template slot-scope="{ row }" slot="action">
             <Tooltip placement="top" content="编辑" transfer>
@@ -53,7 +53,7 @@
                 type="primary"
                 icon="md-create"
                 size="small"
-                @click="openModal(row.id,row)"
+                @click="openModal(row.id, row)"
               ></Button>
             </Tooltip>
             <Poptip
@@ -70,19 +70,25 @@
     </Card>
 
     <!-- 弹窗 -->
-    <Modal v-if="addOrUpdateVisible" ref="addOrUpdate" :tabData = "tableData" />
+    <AccountManagementModal
+      v-if="addOrUpdateVisible"
+      ref="addOrUpdate"
+      :tabData="tableData"
+    />
   </div>
 </template>
 
 <script>
 import globalMixin from "~/plugins/mixin";
 import mixin from "./mixins";
-import Modal from "../../components/contract/account-management-modal"
+import AccountManagementModal from "../../components/contract/account-management-modal";
+import AccountManagementDetail from "../../components/contract/account-management-detail";
 export default {
   name: "account",
   mixins: [globalMixin, mixin],
-  components:{
-    Modal
+  components: {
+    AccountManagementModal,
+    AccountManagementDetail,
   },
   data() {
     return {
@@ -169,21 +175,23 @@ export default {
           },
         ],
       },
-      addOrUpdateVisible: false
+      addOrUpdateVisible: false,
     };
   },
-  methods:{
-    openModal(id,rowData){
-      this.addOrUpdateVisible = true
-      this.$nextTick(()=>{
-        this.$refs.addOrUpdate.init(id,rowData)
-      })
+  methods: {
+    openModal(id, rowData) {
+      this.addOrUpdateVisible = true;
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.init(id, rowData);
+      });
     },
-    deleteRow(id){
+    deleteRow(id) {
       console.log(id);
-       this.tableData.data = this.tableData.data.filter(value => value.id !== id);
-    }
-  }
+      this.tableData.data = this.tableData.data.filter(
+        (value) => value.id !== id
+      );
+    },
+  },
 };
 </script>
 
