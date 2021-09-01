@@ -214,7 +214,7 @@ export default {
           },
         ],
       },
-      // 存储移除已有的系统信息
+      // 存储移除已有的系统
       recoveSystemInfo: [],
     };
   },
