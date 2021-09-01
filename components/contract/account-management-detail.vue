@@ -26,11 +26,25 @@
             </FormItem>
           </Col>
         </Row>
-        <template v-for="(item, index) in rowData.paymentData">
-          <Row>
+        <div
+          v-for="(item, index) in rowData.paymentData"
+          :key="'payment' + index"
+        >
+          <Row v-if="item.mode === 'bank'">
             <Col :span="22">
               <FormItem label="付款方式:">
-                <Input v-model="item.mode" readonly></Input>
+                <Input v-model="mode" readonly>{{
+                  filterMode(item.mode)
+                }}</Input>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row v-if="item.mode === 'Alipay'">
+            <Col :span="22">
+              <FormItem label="付款方式:">
+                <Input v-model="otherMode" readonly>{{
+                  filterMode(item.mode)
+                }}</Input>
               </FormItem>
             </Col>
           </Row>
@@ -73,7 +87,7 @@
               </Col>
             </Row>
           </div>
-        </template>
+        </div>
       </Form>
       <div slot="footer">
         <Button type="primary" @click="detailModal = false">确定</Button>
@@ -92,7 +106,15 @@ export default {
   data() {
     return {
       detailModal: false,
+      mode: "",
+      otherMode: "",
     };
+  },
+  methods: {
+    filterMode(val) {
+      if (val === "bank") return (this.mode = "银行转账");
+      if (val === "Alipay") return (this.otherMode = "支付宝转账");
+    },
   },
 };
 </script>

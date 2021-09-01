@@ -243,7 +243,7 @@ export default {
     preservation() {
       this.$refs.popupInfo.validate((vaild) => {
         if (!vaild) return;
-        this.tabData.data.push(this.popupForm);
+        this.tabData.data.push(JSON.parse(JSON.stringify(this.popupForm)));
         this.show = false;
       });
     },
