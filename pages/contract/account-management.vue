@@ -3,35 +3,25 @@
     <Card>
       <!-- 筛选搜索区域 -->
       <Row slot="title">
-        <Col :span="22">
-          <Select v-model="formData.ownership">
-            <Option
-              v-for="item in jurisdictionData"
-              :value="item.value"
-              :key="item.value"
-              >{{ item.label }}</Option
-            >
+        <Col :span="22" @keydown.native.enter.prevent="getList()">
+          <Select class="mb-5" v-model="formData.ownership" placeholder="数据权限范围" @on-change="getList()">
+            <Option v-for="(item, index) in dataPermissionRange" :value="item.value" :label="item.label" :key="'dataPer' + index"></Option>
           </Select>
           <Input
-            v-model="formData.companyName"
+            v-model="formData.merchantName"
             clearable
             placeholder="公司名称"
           />
-          <Select v-model="formData.customerType" placeholder="客户类型">
-            <Option
-              v-for="item in merchantTypeList"
-              :value="item.value"
-              :key="item.value"
-              >{{ item.label }}</Option
-            >
+          <Select v-model="formData.merchantType" clearable placeholder="客户类型">
+            <Option v-for="(item, index) in merchantTypeList" :key="index" :value="item.value" :label="item.label"></Option>
           </Select>
-          <Input v-model="formData.register" clearable placeholder="登记人" />
+          <Input v-model="formData.createdBy" clearable placeholder="登记人" />
         </Col>
         <Col :span="2">
-          <Button type="primary" icon="ios-search">搜索</Button>
+          <Button type="primary" icon="ios-search" @click="getList()">搜索</Button>
         </Col>
         <Col :span="24">
-          <Button type="primary" @click="openMode('popupInfo', 'add')"
+          <Button type="primary" @click="openMode('popupForm', 'add')"
             >添加</Button
           >
         </Col>
@@ -42,12 +32,13 @@
           ref="selection"
           border
           highlight-row
+          :loading="loadingTable"
           :columns="tableData.columns"
           :data="tableData.data"
           size="small"
         >
-          <template slot-scope="{ row }" slot="companyName">
-            <AccountManagementDetail :rowData="row" />
+          <template slot-scope="{ row }" slot="merchantName">
+            <AccountManagementDetail :id="row.id" />
           </template>
           <template slot-scope="{ row }" slot="action">
             <Tooltip placement="top" content="编辑" transfer>
@@ -55,7 +46,7 @@
                 type="primary"
                 icon="md-create"
                 size="small"
-                @click="openMode('popupInfo', 'edit', row)"
+                @click="openMode('popupForm', 'edit', row.id)"
               ></Button>
             </Tooltip>
             <Poptip
@@ -68,6 +59,20 @@
             </Poptip>
           </template>
         </Table>
+        <div style="margin: 10px;overflow: hidden">
+          <div class="pages-L">共 {{ pageProps.totalCount }} 条</div>
+          <div style="float: right;">
+            <Page
+              :total="pageProps.totalCount"
+              size="small"
+              :current="pageProps.currentPage"
+              show-sizer
+              show-elevator
+              @on-change="changePage"
+              @on-page-size-change="changePageSize"
+            ></Page>
+          </div>
+        </div>
       </Row>
     </Card>
 
@@ -78,52 +83,59 @@
       width="550"
     >
       <Form
-        ref="popupInfo"
+        ref="popupForm"
         :model="popupForm"
         :rules="popupFormRules"
         :label-width="100"
       >
         <Row>
           <Col :span="22">
-            <FormItem label="公司名称:" prop="companyName">
-              <Input
-                v-model="popupForm.companyName"
-                placeholder="请输入公司名称"
-              />
+            <FormItem label="公司名称:" prop="contractorId">
+              <Select
+                filterable
+                v-model="popupForm.contractorId"
+                :remote-method="debQueryCompany"
+                :loading="queryLoading"
+                @on-select="selectCompany"
+                @on-query-change="companyKeyChange"
+                :placeholder="popupForm.merchantName || '请输入公司名称'"
+              >
+                <Option v-for="(item, index) in companyList" :value="item.id" :label="item.merchantName" :key="index"></Option>
+              </Select>
             </FormItem>
           </Col>
         </Row>
         <Row>
           <Col :span="22">
             <FormItem label="客户类型:">
-              <Input v-model="popupForm.customerType" disabled />
+              <Input v-model="popupForm.merchantType" disabled />
             </FormItem>
           </Col>
         </Row>
         <Row>
           <Col :span="22">
             <FormItem label="合作品牌:">
-              <Input v-model="popupForm.cooperativeBrand" disabled />
+              <Input v-model="popupForm.coBrand" disabled />
             </FormItem>
           </Col>
         </Row>
         <!-- 付款方式 -->
         <div
-          v-for="(item, index) in popupForm.paymentData"
+          v-for="(item, index) in popupForm.accountDetailList"
           :key="'payment' + index"
         >
           <Row>
             <Col :span="22">
               <FormItem
                 label="付款方式:"
-                :prop="`paymentData[${index}].mode`"
+                :prop="`accountDetailList[${index}].paymentType`"
                 :rules="{
                   required: true,
                   message: '请选择付款方式',
                   trigger: 'blur',
                 }"
               >
-                <Select v-model="item.mode">
+                <Select v-model="item.paymentType">
                   <Option
                     v-for="val in paymentMode"
                     :value="val.value"
@@ -137,7 +149,7 @@
               <div v-if="index === 0">
                 <Button
                   icon="md-add"
-                  @click="() => popupForm.paymentData.push({ mode: 'Alipay' })"
+                  @click="() => popupForm.accountDetailList.push({ paymentType: 'alipay' })"
                 ></Button>
               </div>
               <Button
@@ -148,12 +160,12 @@
             </Col>
           </Row>
           <!-- 银行付款 -->
-          <div v-if="item.mode === 'bank'">
+          <div v-if="item.paymentType === 'bank'">
             <Row>
               <Col :span="22">
                 <FormItem
                   label="开户银行:"
-                  :prop="`paymentData[${index}].openBank`"
+                  :prop="`accountDetailList[${index}].accountOpenFrom`"
                   :rules="{
                     required: true,
                     message: '请输入正确的开户银行',
@@ -161,7 +173,7 @@
                     max: 50,
                   }"
                 >
-                  <Input v-model="item.openBank" placeholder="请输入开户银行" />
+                  <Input v-model="item.accountOpenFrom" placeholder="请输入开户银行" />
                 </FormItem>
               </Col>
             </Row>
@@ -169,7 +181,7 @@
               <Col :span="22">
                 <FormItem
                   label="银行户名:"
-                  :prop="`paymentData[${index}].bankName`"
+                  :prop="`accountDetailList[${index}].accountName`"
                   :rules="{
                     required: true,
                     message: '请输入正确的银行户名',
@@ -177,7 +189,7 @@
                     max: 50,
                   }"
                 >
-                  <Input v-model="item.bankName" placeholder="请输入银行户名" />
+                  <Input v-model="item.accountName" placeholder="请输入银行户名" />
                 </FormItem>
               </Col>
             </Row>
@@ -185,7 +197,7 @@
               <Col :span="22">
                 <FormItem
                   label="银行账号:"
-                  :prop="`paymentData[${index}].bankAccount`"
+                  :prop="`accountDetailList[${index}].accountNumber`"
                   :rules="{
                     required: true,
                     message: '请输入正确的银行账号',
@@ -194,7 +206,7 @@
                   }"
                 >
                   <Input
-                    v-model="item.bankAccount"
+                    v-model="item.accountNumber"
                     placeholder="请输入银行账号"
                   />
                 </FormItem>
@@ -202,12 +214,12 @@
             </Row>
           </div>
           <!-- 支付宝付款 -->
-          <div v-if="item.mode === 'Alipay'">
+          <div v-if="item.paymentType === 'alipay'">
             <Row>
               <Col :span="22">
                 <FormItem
                   label="支付宝户名:"
-                  :prop="`paymentData[${index}].AlipayName`"
+                  :prop="`accountDetailList[${index}].alipayName`"
                   :rules="{
                     required: true,
                     message: '请输入正确的支付宝户名',
@@ -216,7 +228,7 @@
                   }"
                 >
                   <Input
-                    v-model="item.AlipayName"
+                    v-model="item.alipayName"
                     placeholder="请输入支付宝户名"
                   />
                 </FormItem>
@@ -226,7 +238,7 @@
               <Col :span="22">
                 <FormItem
                   label="支付宝账号:"
-                  :prop="`paymentData[${index}].AlipayAccount`"
+                  :prop="`accountDetailList[${index}].alipayNumber`"
                   :rules="{
                     required: true,
                     message: '请输入正确的支付宝账号',
@@ -235,7 +247,7 @@
                   }"
                 >
                   <Input
-                    v-model="item.AlipayAccount"
+                    v-model="item.alipayNumber"
                     placeholder="请输入支付宝账号"
                   />
                 </FormItem>
@@ -245,8 +257,8 @@
         </div>
       </Form>
       <div slot="footer">
-        <Button @click="popupShow = false">取消</Button>
-        <Button type="primary" @click="preservation()">保存</Button>
+        <Button @click="closeModal('popupForm')">取消</Button>
+        <Button type="primary" :loading="btnLoading" @click="preservation()">保存</Button>
       </div>
     </Modal>
   </div>
@@ -267,27 +279,8 @@ export default {
       // 筛选搜索区域数据
       formData: {
         ownership: "company",
-        customerType: "cs",
       },
-      // 权限数据
-      jurisdictionData: [
-        {
-          value: "company",
-          label: "全部",
-        },
-        {
-          value: "my",
-          label: "我负责的",
-        },
-        {
-          value: "department",
-          label: "本部门的",
-        },
-        {
-          value: "Subordinate",
-          label: "本部门及下属部门的",
-        },
-      ],
+
       // 表格数据
       tableData: {
         columns: [
@@ -298,27 +291,27 @@ export default {
           },
           {
             title: "公司名称",
-            slot: "companyName",
+            slot: "merchantName",
             align: "center",
           },
           {
             title: "客户类型",
-            key: "customerType",
+            key: "merchantType",
             align: "center",
           },
           {
             title: "合作品牌",
-            key: "cooperativeBrand",
+            key: "coBrand",
             align: "center",
           },
           {
             title: "登记人",
-            key: "registrant",
+            key: "createdBy",
             align: "center",
           },
           {
             title: "登记时间",
-            key: "time",
+            key: "createdAt",
             align: "center",
           },
           {
@@ -328,28 +321,22 @@ export default {
             align: "center",
           },
         ],
-        data: [
-          {
-            id: 1,
-            companyName: "凡岛网络",
-            customerType: "CS",
-            cooperativeBrand: "WIS",
-            registrant: "lin",
-            time: "2021-8-24",
-          },
-          {
-            id: 2,
-            companyName: "慕可生物",
-            customerType: "KA",
-            cooperativeBrand: "KONO",
-            registrant: "chen",
-            time: "2021-8-24",
-          },
-        ],
+        data: [],
       },
+      loadingTable: false,
+       pageProps: {
+        page: 1,
+        perPage: 10,
+        currentPage: 1,
+        totalCount: 0,
+      },
+      // 搜索公司名称数据
+      companyList: [],
 
       // 弹窗数据
       popupShow: false,
+      queryLoading: false,
+      btnLoading: false,
       popupType: "",
       paymentMode: [
         {
@@ -357,28 +344,29 @@ export default {
           label: "银行转账",
         },
         {
-          value: "Alipay",
+          value: "alipay",
           label: "支付宝转账",
         },
       ],
       popupForm: {
-        id: "",
-        companyName: "",
-        customerType: "",
-        cooperativeBrand: "",
-        paymentData: [
+        id: undefined,
+        contractorId: "",
+        merchantName: undefined,
+        merchantType: "",
+        coBrand: "",
+        accountDetailList: [
           {
-            mode: "bank",
-            openBank: "",
-            bankName: "",
-            bankAccount: "",
-            AlipayName: "",
-            AlipayAccount: "",
+            paymentType: "bank",
+            accountOpenFrom: "",
+            accountName: "",
+            accountNumber: "",
+            alipayName: "",
+            alipayNumber: "",
           },
         ],
       },
       popupFormRules: {
-        companyName: [
+        'contractorId': [
           {
             required: true,
             message: "请输入公司名",
@@ -388,50 +376,159 @@ export default {
       },
       // 存储移除已有的系统信息
       recoveSystemInfo: [],
+      // 远程搜索的方法
+      debQueryCompany: this.$debonce(this.queryCompany, 500)
     };
   },
+  activated(){
+    this.getList()
+  },
   methods: {
-    openMode(prop, type, data) {
+    // 列表数据
+    async getList() {
+      this.loadingTable = true
+      try {
+        let res = await this.$api.accountList()
+        if(res.code === 0) {
+          this.tableData.data = res.data.list
+          this.pageProps.totalCount = res.data.totalCount
+          this.pageProps.currentPage = res.data.currentPage
+          this.formData.ownership = res.data.ownership
+          this.handleValidateDataPermissionRange(this, 'isGetDataPermissionRange', 'dataPermissionRange', res.data.ownership)
+        }
+         this.loadingTable = false
+      } catch (err) {
+        this.loadingTable = false
+      }
+    },
+
+    changePage(e) {
+      this.pageProps.page = e
+      this.getList()
+    },
+    
+    changePageSize(e) {
+      this.pageProps.perPage = e
+      this.getList()
+    },
+    
+    // 打开弹窗
+    openMode(prop, type, id) {
       this.popupShow = true;
       this.popupType = type;
       this.$refs[prop].resetFields();
-      if (prop === "popupInfo" && type === "edit") {
-        // this.popupForm = data;
-        this.popupForm = JSON.parse(JSON.stringify(data));
+      if (prop === "popupForm" && type === "edit") {
+         this.getDetail(id)
       }
     },
+
+    closeModal(prop) {
+      this.popupShow = false
+      this[prop].contractorId = undefined
+    },
+
+    // 选择项目时触发
+    selectCompany(target) {
+      target = target || {}
+      // 过滤匹配的客户阶段
+      this.popupForm.contractorId = target.value
+    },
+
+    // 搜索词改变时触发
+    companyKeyChange(query) {
+      // 解决首次输入空格下拉框显示id
+      if(!query.trim()) {
+        this.popupForm.contractorId = ''
+        return false
+      }
+    },
+
+    async queryCompany(name) {
+      if(!name.trim()) return
+      let res, merchantKinds = ['leads', 'potential', 'cooperation']
+      this.queryLoading = true
+      try {
+        res = await this.$api.cooperativeCustomerSearchPartner({ name,merchantKinds })
+        if(res.code === 0) {
+          this.queryLoading = false
+          res.data.length != 0 ? this.companyList = res.data : ''
+        }
+      } catch (error) {
+        this.queryLoading = false
+      }
+    },
+    
+    // 提交表单
+    preservation() {
+      this.$refs.popupForm.validate(async (vaild) => {
+        if (!vaild) return;
+        this.btnLoading = true
+        this.popupForm.accountDetailList.forEach((val) => {
+          if (val.paymentType === "bank") {
+            delete val.alipayName;
+            delete val.alipayNumber;
+          } else if (val.paymentType === "alipay") {
+            delete val.accountOpenFrom;
+            delete val.accountName;
+            delete val.accountNumber;
+          }
+        });
+        let res, params = JSON.parse(JSON.stringify(this.popupForm))
+        delete params.merchantType
+        delete params.coBrand
+        params.contractorId = params.contractorId - 0
+        try {
+          res = !params.id ? await this.$api.addAccount(params) : await this.$api.accountUpdate(params)
+          
+          if(res.code === 0) {
+              this.$Message.success('操作成功')
+              this.btnLoading = false
+              this.closeModal('popupForm')
+              this.getList()
+            }
+        } catch (err) {
+          this.$Notice.error({
+            title: err.code,
+            desc: err.message
+          })
+          this.btnLoading = false
+          }
+      });
+    },
+
+    async getDetail(id) {
+      try {
+        let res = await this.$api.accountDetail({id})
+        if(res.code === 0) {
+          this.popupForm = JSON.parse(JSON.stringify(res.data))
+        }
+      } catch (err) {
+      }
+    },
+    
     // 移除付款方式
     removePaymentMode(index) {
-      const res = this.popupForm.paymentData.splice(index, 1);
-      console.log(res);
+      const res = this.popupForm.accountDetailList.splice(index, 1);
       if (!!res[0].id) {
         res[0].del = true;
         this.recoveSystemInfo.push(res[0]);
       }
     },
-    preservation() {
-      this.$refs.popupInfo.validate((vaild) => {
-        if (!vaild) return;
-        this.popupForm.paymentData.forEach((val) => {
-          if (val.mode === "bank") {
-            delete val.AlipayName;
-            delete val.AlipayAccount;
-          } else if (val.mode === "Alipay") {
-            delete val.openBank;
-            delete val.bankName;
-            delete val.bankAccount;
-          }
-        });
-        console.log(this.popupForm);
-        this.tableData.data.push(JSON.parse(JSON.stringify(this.popupForm)));
-        this.popupShow = false;
-      });
-    },
-    deleteRow(id) {
-      console.log(id);
-      this.tableData.data = this.tableData.data.filter(
-        (value) => value.id !== id
-      );
+    
+    async deleteRow(id) {
+      let res
+      try {
+        res = await this.$api.accountDelete({id})
+        if(res.code === 0) {
+          this.$Message.success('操作成功')
+          this.getList()
+        }
+      } catch (err) {
+        this.$Notice.error({
+          title: err.code,
+          desc: err.message
+        })        
+      }
     },
   },
 };

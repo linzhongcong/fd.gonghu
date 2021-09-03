@@ -1,72 +1,72 @@
 <template>
   <div>
-    <div class="companyName" @click="detailModal = true">
-      {{ rowData.companyName }}
+    <div class="merchantName" @click="detailModal = true">
+      {{ popupForm.merchantName }}
     </div>
     <Modal v-model="detailModal" title="账号详情" width="550">
-      <Form ref="detailInfo" :model="rowData" :label-width="100">
+      <Form ref="detailInfo" :model="popupForm" :label-width="100">
         <Row>
           <Col :span="22">
             <FormItem label="公司名称:">
-              <Input v-model="rowData.companyName" readonly />
+              <Input v-model="popupForm.merchantName" readonly />
             </FormItem>
           </Col>
         </Row>
         <Row>
           <Col :span="22">
             <FormItem label="客户类型:">
-              <Input v-model="rowData.customerType" readonly disabled />
+              <Input v-model="popupForm.merchantType" readonly disabled />
             </FormItem>
           </Col>
         </Row>
         <Row>
           <Col :span="22">
             <FormItem label="合作品牌:">
-              <Input v-model="rowData.cooperativeBrand" readonly disabled />
+              <Input v-model="popupForm.coBrand" readonly disabled />
             </FormItem>
           </Col>
         </Row>
         <div
-          v-for="(item, index) in rowData.paymentData"
+          v-for="(item, index) in popupForm.accountDetailList"
           :key="'payment' + index"
         >
-          <Row v-if="item.mode === 'bank'">
+          <Row v-if="item.paymentType === 'bank'">
             <Col :span="22">
               <FormItem label="付款方式:">
                 <Input v-model="mode" readonly>{{
-                  filterMode(item.mode)
+                  filterMode(item.paymentType)
                 }}</Input>
               </FormItem>
             </Col>
           </Row>
-          <Row v-if="item.mode === 'Alipay'">
+          <Row v-if="item.paymentType === 'alipay'">
             <Col :span="22">
               <FormItem label="付款方式:">
                 <Input v-model="otherMode" readonly>{{
-                  filterMode(item.mode)
+                  filterMode(item.paymentType)
                 }}</Input>
               </FormItem>
             </Col>
           </Row>
-          <div v-if="item.mode === 'bank'">
+          <div v-if="item.paymentType === 'bank'">
             <Row>
               <Col :span="22">
                 <FormItem label="开户银行:">
-                  <Input v-model="item.openBank" readonly></Input>
+                  <Input v-model="item.accountOpenFrom" readonly></Input>
                 </FormItem>
               </Col>
             </Row>
             <Row>
               <Col :span="22">
                 <FormItem label="银行户名:">
-                  <Input v-model="item.bankName" readonly></Input>
+                  <Input v-model="item.accountName" readonly></Input>
                 </FormItem>
               </Col>
             </Row>
             <Row>
               <Col :span="22">
                 <FormItem label="银行账号:">
-                  <Input v-model="item.bankAccount" readonly></Input>
+                  <Input v-model="item.accountNumber" readonly></Input>
                 </FormItem>
               </Col>
             </Row>
@@ -75,14 +75,14 @@
             <Row>
               <Col :span="22">
                 <FormItem label="支付宝户名:">
-                  <Input v-model="item.AlipayName" readonly></Input>
+                  <Input v-model="item.alipayName" readonly></Input>
                 </FormItem>
               </Col>
             </Row>
             <Row>
               <Col :span="22">
                 <FormItem label="支付宝账号:">
-                  <Input v-model="item.AlipayAccount" readonly></Input>
+                  <Input v-model="item.alipayNumber" readonly></Input>
                 </FormItem>
               </Col>
             </Row>
@@ -99,8 +99,8 @@
 <script>
 export default {
   props: {
-    rowData: {
-      type: Object,
+    id: {
+      type: String,
     },
   },
   data() {
@@ -108,19 +108,57 @@ export default {
       detailModal: false,
       mode: "",
       otherMode: "",
+
+      popupForm: {
+      contractorId: "",
+      merchantName: undefined,
+      merchantType: "",
+      coBrand: "",
+      accountDetailList: [
+        {
+          paymentType: "",
+          accountOpenFrom: "",
+          accountName: "",
+          accountNumber: "",
+          alipayName: "",
+          alipayNumber: "",
+        },
+      ],
+    },
     };
   },
+  created(){
+    this.getDetail(this.id)
+  },
   methods: {
+    async getDetail(id) {
+      try {
+        let res = await this.$api.accountDetail({id})
+        console.log(res);
+        if(res.code === 0) {
+          this.popupForm = res.data
+        }
+      } catch (err) {
+      }
+    },
     filterMode(val) {
       if (val === "bank") return (this.mode = "银行转账");
-      if (val === "Alipay") return (this.otherMode = "支付宝转账");
+      if (val === "alipay") return (this.otherMode = "支付宝转账");
     },
+    // paymentSeparate(){
+    //   this.popupForm.accountDetailList.forEach(val => {
+    //     console.log(val);
+    //     if(val.paymentType === 'bank'){
+
+    //     }
+    //   })
+    // }
   },
 };
 </script>
 
 <style lang="less" scoped>
-.companyName {
+.merchantName {
   color: #2d8cf0;
   cursor: pointer;
 }

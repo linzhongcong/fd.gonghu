@@ -2770,6 +2770,61 @@ const developerContractorConfirmShow = (params) => {
 }
 
 /**
+ *客户管理 - 账号管理 - 列表
+ * */
+const accountList = (params) => {
+  return fetch({
+    url: '/v2/account',
+    method: 'GET',
+    params: params,
+  })
+}
+
+/**
+ *客户管理 - 账号管理 - 添加账号
+ * */
+const addAccount = (params) => {
+  return fetch({
+    url: '/v2/account/create',
+    method: 'POST',
+    data: params,
+  })
+}
+
+/**
+ *客户管理 - 账号管理 - 编辑账号
+ * */
+const accountUpdate = (params) => {
+  return fetch({
+    url: '/v2/account/update',
+    method: 'PUT',
+    data: params,
+  })
+}
+
+/**
+ *客户管理 - 账号管理 - 删除账号
+ * */
+const accountDelete = (params) => {
+  return fetch({
+    url: '/v2/account/delete?id={id}',
+    method: 'DELETE',
+    params: params,
+  })
+}
+
+/**
+ *客户管理 - 账号管理 - 账号详情
+ * */
+const accountDetail = (params) => {
+  return fetch({
+    url: '/v2/account/view?id={id}',
+    method: 'GET',
+    params: params,
+  })
+}
+
+/**
  *销售单管理 - 列表
  * */
 const salesReviewList = (params) => {
@@ -3558,4 +3613,9 @@ export default {
   getSystemInfo, //v2
   cooperativeCustomerDeatilCheckinLog, //v2
   queryOrderContractPolicy, // v2
+  accountList, //v2
+  addAccount, //V2
+  accountUpdate, //v2
+  accountDelete, //v2
+  accountDetail, //2
 }
