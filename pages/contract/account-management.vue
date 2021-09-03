@@ -38,7 +38,7 @@
           size="small"
         >
           <template slot-scope="{ row }" slot="merchantName">
-            <AccountManagementDetail :id="row.id" />
+            <AccountManagementDetail :rowData="row" />
           </template>
           <template slot-scope="{ row }" slot="action">
             <Tooltip placement="top" content="编辑" transfer>

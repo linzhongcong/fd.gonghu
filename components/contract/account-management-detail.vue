@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="merchantName" @click="detailModal = true">
-      {{ popupForm.merchantName }}
+      {{ rowData.merchantName }}
     </div>
     <Modal v-model="detailModal" title="账号详情" width="550">
       <Form ref="detailInfo" :model="popupForm" :label-width="100">
@@ -26,11 +26,8 @@
             </FormItem>
           </Col>
         </Row>
-        <div
-          v-for="(item, index) in popupForm.accountDetailList"
-          :key="'payment' + index"
-        >
-          <Row v-if="item.paymentType === 'bank'">
+        <template v-for="(item,index) in popupForm.bankArray">
+          <Row v-if="index < 1">
             <Col :span="22">
               <FormItem label="付款方式:">
                 <Input v-model="mode" readonly>{{
@@ -39,17 +36,7 @@
               </FormItem>
             </Col>
           </Row>
-          <Row v-if="item.paymentType === 'alipay'">
-            <Col :span="22">
-              <FormItem label="付款方式:">
-                <Input v-model="otherMode" readonly>{{
-                  filterMode(item.paymentType)
-                }}</Input>
-              </FormItem>
-            </Col>
-          </Row>
-          <div v-if="item.paymentType === 'bank'">
-            <Row>
+          <Row>
               <Col :span="22">
                 <FormItem label="开户银行:">
                   <Input v-model="item.accountOpenFrom" readonly></Input>
@@ -70,24 +57,32 @@
                 </FormItem>
               </Col>
             </Row>
-          </div>
-          <div v-else>
-            <Row>
+        </template>
+        <template v-for="(val,index) in popupForm.alipayArray">
+          <Row v-if="index < 1">
+            <Col :span="22">
+              <FormItem label="付款方式:">
+                <Input v-model="otherMode" readonly>{{
+                  filterMode(val.paymentType)
+                }}</Input>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
               <Col :span="22">
                 <FormItem label="支付宝户名:">
-                  <Input v-model="item.alipayName" readonly></Input>
+                  <Input v-model="val.alipayName" readonly></Input>
                 </FormItem>
               </Col>
             </Row>
             <Row>
               <Col :span="22">
                 <FormItem label="支付宝账号:">
-                  <Input v-model="item.alipayNumber" readonly></Input>
+                  <Input v-model="val.alipayNumber" readonly></Input>
                 </FormItem>
               </Col>
             </Row>
-          </div>
-        </div>
+        </template>
       </Form>
       <div slot="footer">
         <Button type="primary" @click="detailModal = false">确定</Button>
@@ -99,8 +94,8 @@
 <script>
 export default {
   props: {
-    id: {
-      type: String,
+    rowData: {
+      type: Object,
     },
   },
   data() {
@@ -110,49 +105,42 @@ export default {
       otherMode: "",
 
       popupForm: {
-      contractorId: "",
       merchantName: undefined,
       merchantType: "",
       coBrand: "",
-      accountDetailList: [
-        {
-          paymentType: "",
-          accountOpenFrom: "",
-          accountName: "",
-          accountNumber: "",
-          alipayName: "",
-          alipayNumber: "",
-        },
-      ],
+      bankArray:[],
+      alipayArray:[],
     },
     };
   },
   created(){
-    this.getDetail(this.id)
+    this.getDetail(this.rowData.id)
   },
   methods: {
     async getDetail(id) {
       try {
         let res = await this.$api.accountDetail({id})
-        console.log(res);
         if(res.code === 0) {
-          this.popupForm = res.data
+          this.popupForm.merchantName = res.data.merchantName
+          this.popupForm.merchantType = res.data.merchantType
+          this.popupForm.coBrand = res.data.coBrand
+          res.data.accountDetailList.forEach(item => {
+            if(item.paymentType === 'bank'){
+              this.popupForm.bankArray.push(item)
+            }
+             if(item.paymentType === 'alipay'){
+              this.popupForm.alipayArray.push(item)
+            }
+          });
         }
       } catch (err) {
       }
     },
+
     filterMode(val) {
       if (val === "bank") return (this.mode = "银行转账");
       if (val === "alipay") return (this.otherMode = "支付宝转账");
     },
-    // paymentSeparate(){
-    //   this.popupForm.accountDetailList.forEach(val => {
-    //     console.log(val);
-    //     if(val.paymentType === 'bank'){
-
-    //     }
-    //   })
-    // }
   },
 };
 </script>
