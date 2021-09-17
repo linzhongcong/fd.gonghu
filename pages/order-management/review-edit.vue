@@ -64,29 +64,7 @@
                   :disabled="isMiniProgram"></DatePicker>
                 </FormItem>
               </Col>
-              <!-- <Col :md="8" :sm="24">
-                <FormItem label="业务员：" :label-width="90">
-                  <span v-text="formData.salesman"></span>
-                </FormItem>
-              </Col> -->
             </Row>
-            <!-- <Row>
-              <Col :md="8" :sm="24">
-                <FormItem label="合作商政策：" :label-width="90">
-                  <span v-text="formData.partner_policy_name"></span>
-                </FormItem>
-              </Col>
-              <Col :md="8" :sm="24">
-                <FormItem label="付款方式：" :label-width="90">
-                  <span v-text="paymentMethod[formData.payment_method]"></span>
-                </FormItem>
-              </Col>
-              <Col :md="8" :sm="24">
-                <FormItem label="订单来源：" :label-width="90">
-                  <span v-text="orderFormList[formData.order_form]"></span>
-                </FormItem>
-              </Col>
-            </Row> -->
             <Row>
               <Col :sm="16" :xs="24">
                 <FormItem label="收货地址：" :label-width="90" prop="contractor_address_id">
@@ -131,6 +109,18 @@
               <Col :md="8" :sm="24">
                 <FormItem label="联系方式：" :label-width="90">
                   <span v-text="formData.contact_phone"></span>
+                </FormItem>
+              </Col>
+              <Col :md="8" :sm="24">
+                <FormItem label="业务员：" :label-width="90" prop="follow_id">
+                  <Select v-model="formData.follow_id" style="max-width:200px">
+                    <Option
+                      v-for="(item, index) in followUserInfoList"
+                      :value="item.follow_id"
+                      :label="item.full_name"
+                      :key="`followUserInfoList${index}`">
+                    </Option>
+                  </Select>
                 </FormItem>
               </Col>
             </Row>
@@ -893,10 +883,12 @@
           giftStartingAmount: 0, // 赠品活动应收金额
           // donation_limit: 0,
           receiving_address: '',
+          contractor_address_id: '', // 收货地址id
           new_receiving_address:'',
           contact_name:'',
           contact_phone:'',
           orderFile: [], // 凭证
+          follow_id: '', // 业务员id
         },
         giftBox: [],//满赠 类目商品总和
         formRules: {
@@ -923,7 +915,10 @@
           ],
           orderFile: [
             {required: true, validator: uploadFile, trigger: 'change'}
-          ]
+          ],
+          follow_id: [
+            {required: true, message: '该选项不能为空', trigger: 'change'}
+          ],
         },
         buttonLoading: false,
         isDisabled: false,
@@ -1065,6 +1060,7 @@
         systemInfoList: [], // 系统/门店 选项列表
         partnerPolicyList: [], // 合作商政策 选项列表
         contractPolicyList: [], // 合同 选项列表
+        followUserInfoList: [], // 业务员 选项列表
         remoteContractPolicyLoading: false, // 加载合同loading
       };
     },
@@ -1332,6 +1328,8 @@
         this.formData.systemInfoId = ''
         this.formData.partner_policy_id = ''
         this.formData.contract_policy_id = ''
+        this.formData.follow_id = ''
+        this.followUserInfoList = []
         this.systemInfoList = []
         this.partnerPolicyList = []
         this.contractPolicyList = []
@@ -1350,13 +1348,10 @@
                 newAddress:v.province + v.city + v.county +' '+ v.receiving_address
               }
             }); // 所有收货地址（数组）
+            this.followUserInfoList = this.queryContranctorList[i].followUserInfo; // 业务员
             this.systemInfoList = this.queryContranctorList[i].systemInfo; // 所有系统/门店（数组）
             this.partnerPolicyList = this.queryContranctorList[i].partnerInfoByContracts; // 所有合作商政策
             !this.formData.contractorReceivingAddrGroup ?  this.formatDate.new_receiving_address =this.formData.contractorReceivingAddrGroup[0].newAddress :  this.formatDate.new_receiving_address = ''
-            // this.formData.partner_policy_name = this.queryContranctorList[i].partner_policy_name; // 合作商政策
-            // this.formData.partner_policy_id = this.queryContranctorList[i].partner_policy_id; // 合作商政策ID
-            // this.formData.partnerPolicyGroup = this.queryContranctorList[i].filterPartnerPolicyGroup; // 包含政策（合同政策）
-            // this.formData.contract_policy_id = this.queryContranctorList[i].contract_policy_id; // 合同政策ID
           }
         }
         // 商家的名称改变时,清空已选的商品
@@ -2296,6 +2291,8 @@
               this.openGift = false
               this.spinLoading = true;
               this.formData = {...res.data, ...res.data.discount.limit};
+              this.formData.follow_id = res.data.salesman_id; // 业务员id;
+              this.followUserInfoList = res.data.contractorFollowInfo; // 业务员选项
               this.formData.contractorReceivingAddrGroup = this.formData.contractorReceivingAddrGroup.map(v => {
               return {
                 ...v,

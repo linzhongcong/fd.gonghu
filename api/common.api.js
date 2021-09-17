@@ -4,23 +4,23 @@ const user = (params) => {
   return fetch({
     url: '/v1/user',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
-const login = (params) => {
+const login = (data) => {
   return fetch({
     url: '/v1/login/sign-in',
     method: 'post',
-    data: params,
+    data,
   })
 }
 
-const getCaptcha = (params) => {
+const getCaptcha = (data) => {
   return fetch({
     url: '/v1/login/captcha',
     method: 'post',
-    data: params,
+    data,
   })
 }
 
@@ -42,51 +42,51 @@ const getLog = (params) => {
   return fetch({
     url: '/v1/log',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
 /**
  * 商品设置-显示
  * */
-const productShow = (params) => {
+const productShow = (data) => {
   return fetch({
     url: '/v1/product/show',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 商品设置-隐藏
  * */
-const productNotShow = (params) => {
+const productNotShow = (data) => {
   return fetch({
     url: '/v1/product/not-show',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 商品设置-缺货
  * */
-const productShortage = (params) => {
+const productShortage = (data) => {
   return fetch({
     url: '/v1/product/shortage',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 商品设置-正常
  * */
-const productNotShortage = (params) => {
+const productNotShortage = (data) => {
   return fetch({
     url: '/v1/product/not-shortage',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -97,7 +97,7 @@ const queryRemittanceName = (params) => {
   return fetch({
     url: '/v1/receipt-bank/query-receivable-bank',
     method: 'get',
-    params: params,
+    params,
   })
 }
 /**
@@ -107,7 +107,7 @@ const queryImportMode = (params) => {
   return fetch({
     url: '/v1/receipt-bank/bank-type-list',
     method: 'get',
-    params: params,
+    params,
   })
 }
 /**
@@ -117,17 +117,17 @@ const informationModular = (params) => {
   return fetch({
     url: '/v1/message/index',
     method: 'get',
-    params: params,
+    params,
   })
 }
 /**
  * 首页-点击未读信息（修改状态未已读）
  * */
-const informationRead = (params) => {
+const informationRead = (data) => {
   return fetch({
     url: '/v1/message/read',
     method: 'post',
-    data: params,
+    data,
   })
 }
 /**
@@ -159,40 +159,40 @@ const categoryManagementList = (params) => {
   return fetch({
     url: '/v1/category',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * 类目管理-显示
  * */
-const categoryManagementShow = (params) => {
+const categoryManagementShow = (data) => {
   return fetch({
     url: '/v1/category/show',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 类目管理-隐藏
  * */
-const categoryManagementNotShow = (params) => {
+const categoryManagementNotShow = (data) => {
   return fetch({
     url: '/v1/category/not-show',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 类目管理-添加
  * */
-const categoryManagementCreate = (params) => {
+const categoryManagementCreate = (data) => {
   return fetch({
     url: '/v1/category',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /**
@@ -207,11 +207,11 @@ const categoryManagementDetail = (id) => {
 /**
  * 类目管理-修改
  * */
-const categoryManagementEdit = (params) => {
+const categoryManagementEdit = (data) => {
   return fetch({
     url: `/v1/category/${params.id}`,
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -222,7 +222,7 @@ const productManagementList = (params) => {
   return fetch({
     url: '/v1/product',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 /**
@@ -239,11 +239,11 @@ const productManagementDetails = (id) => {
 /**
  * 商品管理-添加
  * */
-const productManagementCreate = (params) => {
+const productManagementCreate = (data) => {
   return fetch({
     url: '/v1/product',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -251,12 +251,12 @@ const productManagementCreate = (params) => {
  * 商品管理-修改
  * ${params.id}
  * */
-const productManagementEdit = (params) => {
+const productManagementEdit = (data) => {
   return fetch({
     // url: '/v1/product/update',
     url: `/v1/product/${params.id}`,
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -277,7 +277,7 @@ const productManagementUpload = (params) => {
   return fetch({
     url: '/v1/product/product-import',
     method: 'POST',
-    params: params,
+    params,
   })
 }
 
@@ -298,7 +298,7 @@ const orderReviewList = (params) => {
   return fetch({
     url: '/v1/order/index',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
@@ -314,35 +314,33 @@ const orderReviewDetails = (id) => {
 /**
  * 订单发货-下载
  * */
-const orderDeliveryExport = (id) => {
+const orderDeliveryExport = (params) => {
   return fetch({
     url: '/v1/order-delivery/order-delivery-export',
     method: 'get',
-    params: {
-      id,
-    },
+    params,
   })
 }
 
 /**
  * 订单审核-添加
  * */
-const orderReviewCreate = (params) => {
+const orderReviewCreate = (data) => {
   return fetch({
     url: '/v1/order/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 订单审核-编辑
  * */
-const orderReviewEdit = (params) => {
+const orderReviewEdit = (data) => {
   return fetch({
     url: '/v1/order/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 /**
@@ -353,17 +351,17 @@ const orderCancellationList = (params) => {
     url: '/v1/order-invalid',
     // url: '/v1/order-reissue-invalid',
     method: 'get',
-    params: params,
+    params,
   })
 }
 /**
  * 作废订单-作废
  * */
-const orderCancellation = (params) => {
+const orderCancellation = (data) => {
   return fetch({
     url: '/v1/order/invalid',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /**
@@ -378,54 +376,54 @@ const orderReviewDelete = (id) => {
 /**
  * 订单审核-经理审核
  * */
-const orderReviewManagerAudit = (params) => {
+const orderReviewManagerAudit = (data) => {
   return fetch({
     url: '/v1/order/manager-audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /**
  * 订单审核-总监审核
  * */
-const orderReviewDirectorAudit = (params) => {
+const orderReviewDirectorAudit = (data) => {
   return fetch({
     url: '/v1/order/director-audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 补发订单审核 - 审核
  * */
- const replacementOrderReviewManagerAudit = (params) => {
+ const replacementOrderReviewManagerAudit = (data) => {
   return fetch({
     url: '/v1/order-reissue/manager-audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 样品订单审核 - 初审
  * */
- const sampleOrderReviewManagerAudit = (params) => {
+ const sampleOrderReviewManagerAudit = (data) => {
   return fetch({
     url: '/v1/order-sample/manager-audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 样品订单审核 - 复审
  * */
- const sampleOrderReviewDirectorAudit = (params) => {
+ const sampleOrderReviewDirectorAudit = (data) => {
   return fetch({
     url: '/v1/order-sample/director-audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -436,7 +434,7 @@ const orderReviewQueryContractor = (params) => {
   return fetch({
     url: '/v1/order/query-contractor',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -447,7 +445,7 @@ const orderReviewQueryProduct = (params) => {
   return fetch({
     url: '/v1/order/query-product',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -460,11 +458,11 @@ const orderRefundList = (params) => {
   })
 }
 // 订单退款审核 - 退款 - 添加
-const orderRefundAdd = (params) => {
+const orderRefundAdd = (data) => {
   return fetch({
     url: '/v1/order-refund',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 // 订单退款审核 - 退款 - 详情
@@ -483,29 +481,29 @@ const orderRefundDelete = (id) => {
 }
 
 // 订单退款审核 - 退款 - 初审
-const orderRefundAudit = (params) => {
+const orderRefundAudit = (data) => {
   return fetch({
     url: '/v1/order-refund/audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 // 订单退款审核 - 退款 - 复审
-const orderRefundAuditSec = (params) => {
+const orderRefundAuditSec = (data) => {
   return fetch({
     url: '/v1/order-refund/director-audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 // 订单退款审核 - 退款 -  导出
-const orderRefundExport = (params) => {
+const orderRefundExport = (data) => {
   return fetch({
     url: '/v1/order-refund/export',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -518,11 +516,11 @@ const orderServiceList = (params) => {
   })
 }
 // 订单售后审核 - 添加
-const orderServiceAdd = (params) => {
+const orderServiceAdd = (data) => {
   return fetch({
     url: '/v1/order-service',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -543,19 +541,19 @@ const orderServiceDelete = (id) => {
 }
 
 // 订单售后审核 -  审核
-const orderServiceAudit = (params) => {
+const orderServiceAudit = (data) => {
   return fetch({
     url: '/v1/order-service/audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 // 订单售后审核 - 关闭
-const orderServiceClose = (params) => {
+const orderServiceClose = (data) => {
   return fetch({
     url: '/v1/order-service/close',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -666,21 +664,11 @@ const wareptSearch = (params) => {
  * 合作商管理接口 start
  * */
 
-/**
- * 合作商列表-添加
- */
-// const contractorCreate = params => {
-// 	return fetch({
-// 		url: '/v1/contractor-management',
-// 		method: 'POST',
-// 		data: params,
-// 	})
-// }
-const contractorCreate = (params) => {
+const contractorCreate = (data) => {
   return fetch({
     url: '/v2/contractor/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /**
@@ -699,7 +687,7 @@ const getPartnerPolicyArray = (params) => {
   return fetch({
     url: '/v1/contractor-management/get-partner-policy-array',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 /**
@@ -709,7 +697,7 @@ const contractorList = (params) => {
   return fetch({
     url: '/v1/contractor-management',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -739,11 +727,11 @@ const editContractorDetail = (params) => {
 /**
  * 合作商列表-审核
  */
-const contractorAudit = (params) => {
+const contractorAudit = (data) => {
   return fetch({
     url: '/v1/contractor-management/audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -757,47 +745,6 @@ const contractorDelete = (id) => {
   })
 }
 
-/**
- * 账号管理-列表
- */
-const accountManagementList = (params) => {
-  return fetch({
-    url: '/v1/we-chat-user',
-    method: 'GET',
-    params: params,
-  })
-}
-/**
- * 账号管理-解绑
- */
-const accountManagementUnbind = (params) => {
-  return fetch({
-    url: '/v1/we-chat-user/unbind',
-    method: 'POST',
-    data: {
-      id: params,
-    },
-  })
-}
-/**
- * 账号管理-详情
- */
-const accountManagementDetails = (id) => {
-  return fetch({
-    url: `/v1/we-chat-user-contractor/view?id=${id}`,
-    method: 'GET',
-  })
-}
-/**
- * 账号管理-编辑（审核/禁用）
- */
-const accountManagementTabAudit = (params, id) => {
-  return fetch({
-    url: `/v1/we-chat-user-contractor/${id}`,
-    method: 'PATCH',
-    data: params,
-  })
-}
 
 /**
  * 获取合同政策数据
@@ -806,7 +753,7 @@ const contractPolicy = (params) => {
   return fetch({
     url: '/v1/contractor-management/get-contract-policy-array',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -817,63 +764,39 @@ const salesmanData = (params) => {
   return fetch({
     url: '/v1/contractor-management/get-salesman-array',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * 导出
  */
-const contractorExport = (params) => {
+const contractorExport = (data) => {
   return fetch({
     url: '/v1/contractor-management/contractor-export',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /**
  * 订单审核-查询单品折扣
  * */
-const orderReviewQueryProductDiscount = (params) => {
+const orderReviewQueryProductDiscount = (data) => {
   return fetch({
-    // url: '/v1/order/get-discount',
-    // url: '/v1/order/discount',
     url: '/v2/contract-policy/discount',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
-/**
- * 导入
- */
-const contractorImport = (params) => {
-  return fetch({
-    url: '/v1/contractor-management/contractor-import',
-    method: 'POST',
-    data: params,
-  })
-}
-
-/**
- * 合作商列表-修改-旧
- * 不知道是否全为新接口-TODO
- */
-// const contractorUpdate = params => {
-// 	return fetch({
-// 		url: '/v1/contractor-management/update',
-// 		method: 'PAtCH',
-// 		data: params,
-// 	})
-// }
 /**
  * 合作商列表-修改
  */
-const contractorUpdate = (params) => {
+const contractorUpdate = (data) => {
   return fetch({
-    url: `/v2/contractor/update?id=${params.id}`,
-    method: 'PAtCH',
-    data: params,
+    url: `/v2/contractor/update?id=${data.id}`,
+    method: 'PATCH',
+    data,
   })
 }
 /**
@@ -887,7 +810,7 @@ const contractPoliceList = (params) => {
   return fetch({
     url: '/v1/contract-policy-management',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
@@ -898,28 +821,28 @@ const contractPoliceListv2 = (params) => {
   return fetch({
     url: '/v2/contract-policy',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
 /**
  * 合同政策管理-添加
  */
-const addContractPolice = (params) => {
+const addContractPolice = (data) => {
   return fetch({
     url: '/v1/contract-policy-management',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /**
  * 合同政策管理-添加v2
  */
-const addContractPolicev2 = (params) => {
+const v2CreateContractPolicy = (data) => {
   return fetch({
     url: '/v2/contract-policy/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 //--合同政策管理-适用商品-start
@@ -930,7 +853,7 @@ const getProductList = (params) => {
   return fetch({
     url: '/v2/category/get-category',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 /**
@@ -940,7 +863,7 @@ const getProductCategoryList = (params) => {
   return fetch({
     url: '/v2/product/category-product',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 /**
@@ -950,7 +873,7 @@ const getRegularProductList = (params) => {
   return fetch({
     url: '/v2/regular-product',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 /**
@@ -1011,7 +934,7 @@ const getCategoryData = (params) => {
   return fetch({
     url: '/v1/contract-policy-management/get-category',
     method: 'get',
-    params: params,
+    params,
   })
 }
 /**
@@ -1021,7 +944,7 @@ const getProductData = (params) => {
   return fetch({
     url: '/v1/contract-policy-management/get-product',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
@@ -1038,31 +961,43 @@ const getContractPoliceDetail = (id) => {
 /**
  * 合同政策管理-详情v2
  */
-const getContractPoliceDetailv2 = (id) => {
+const v2GetContractPolicyDetail = (params) => {
   return fetch({
-    url: `/v2/contract-policy/view?id=${id}`,
+    url: '/v2/contract-policy/view',
     method: 'GET',
+    params,
+  })
+}
+
+/**
+ * 合同政策管理 - 草稿详情v2
+ */
+ const v2GetContractPolicyDraftDetail = (params) => {
+  return fetch({
+    url: '/v2/contract-policy/draft-view',
+    method: 'GET',
+    params,
   })
 }
 
 /**
  * 合同政策管理-审核
  */
-const auditContractPolice = (params) => {
+const auditContractPolice = (data) => {
   return fetch({
     url: '/v1/contract-policy-management/audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /**
  * 合同政策管理-审核v2
  */
-const auditContractPolicev2 = (params) => {
+const v2AuditContractPolicy = (data) => {
   return fetch({
     url: '/v2/contract-policy/audit',
-    method: 'POST',
-    data: params,
+    method: 'PATCH',
+    data,
   })
 }
 /**
@@ -1079,45 +1014,67 @@ const contractPoliceDelete = (id) => {
 /**
  * 合同政策管理-删除v2
  */
-const contractPoliceDeletev2 = (id) => {
+const v2DeleteContractPolicy = (params) => {
   return fetch({
-    url: `/v2/contract-policy/delete?id=${id}`,
+    url: `/v2/contract-policy/delete`,
     method: 'DELETE',
-    params: id,
+    params,
   })
 }
 
 /**
  * 合同政策管理-修改
  */
-const contractPoliceEdit = (params) => {
+const contractPoliceEdit = (data) => {
   return fetch({
     url: '/v1/contract-policy-management/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合同政策管理-修改v2
  */
-const contractPoliceEditv2 = (params, id) => {
+const v2UpdateContractPolicy = (data) => {
   return fetch({
-    url: `/v2/contract-policy/update?id=${id}`,
-    method: 'PATCH',
-    data: params,
+    url: `/v2/contract-policy/update`,
+    method: 'PUT',
+    data,
+  })
+}
+
+/**
+ * 合同政策管理 - 保存草稿
+ */
+ const saveContractPolicyDraft = (data) => {
+  return fetch({
+    url: `/v2/contract-policy/draft`,
+    method: 'POST',
+    data,
   })
 }
 
 /**
  * 合同政策管理-启用
  */
-const contractPoliceEnable = (params) => {
+const contractPoliceEnable = (data) => {
   return fetch({
     // url: '/v1/contract-policy-management/start-using',
     url: '/v2/contract-policy/start-using',
     method: 'POST',
-    data: params,
+    data,
+  })
+}
+
+/**
+ * 合同政策管理 - 启用/禁用
+ */
+ const contractPolicyEnableStatus = (data) => {
+  return fetch({
+    url: '/v2/contract-policy/enable-status',
+    method: 'PATCH',
+    data,
   })
 }
 
@@ -1128,27 +1085,27 @@ const policyPartnerList = (params) => {
   return fetch({
     url: '/v1/partner-policy/index',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 /***
  * 合作商政策管理 - 添加
  */
-const policyPartnerCreate = (params) => {
+const policyPartnerCreate = (data) => {
   return fetch({
     url: '/v1/partner-policy/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /***
  * 合作商政策管理 - 编辑
  */
-const policyPartnerEdit = (params) => {
+const policyPartnerEdit = (data) => {
   return fetch({
     url: '/v1/partner-policy/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 /***
@@ -1158,18 +1115,18 @@ const queryContractPolicy = (params) => {
   return fetch({
     url: '/v1/partner-policy/query-contract-policy',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /***
  * 合作商政策管理 - 查询合同政策
  */
- const queryOrderContractPolicy = (params) => {
+const queryOrderContractPolicy = (params) => {
   return fetch({
     url: '/v1/order/query-contract-policy',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1199,7 +1156,7 @@ const storeList = (params) => {
   return fetch({
     url: '/v1/contractor-management/facade-supplement',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1212,19 +1169,19 @@ const delStore = (id) => {
 }
 
 // 合作商政策管理 - 门店补录删除
-const auditStore = (params) => {
+const auditStore = (data) => {
   return fetch({
     url: '/v1/contractor-management/facade-audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
-const storeCheck = (params) => {
+const storeCheck = (data) => {
   return fetch({
     url: '/v1/contractor-management/facade-check',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -1239,7 +1196,7 @@ const receiptCashList = (params) => {
   return fetch({
     url: '/v1/receipt-cash-on-delivery',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1256,11 +1213,11 @@ const receiptCashDetail = (id) => {
 /***
  * 订单收款 - 现款现货订单 - 收款
  */
-const receiptCashReceipt = (params) => {
+const receiptCashReceipt = (data) => {
   return fetch({
     url: '/v1/receipt-cash-on-delivery/receipt',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -1271,7 +1228,7 @@ const receiptCashReceiptView = (params) => {
   return fetch({
     url: '/v1/receipt-cash-on-delivery/receipt-view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1282,7 +1239,7 @@ const orderDeliverList = (params) => {
   return fetch({
     url: '/v1/order-delivery/index',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
@@ -1293,7 +1250,7 @@ const loginMessage = (params) => {
   return fetch({
     url: '/v1/user/login-message',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1304,28 +1261,28 @@ const orderDeliverDetail = (params) => {
   return fetch({
     url: '/v1/order-delivery/view',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
 /***
  * 订单发货-导单处理
  */
-const orderDeliverHandle = (params) => {
+const orderDeliverHandle = (data) => {
   return fetch({
     url: '/v1/order-delivery/dispose-delivery',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /***
  * 订单发货-订单导出
  */
-const orderExport = (params) => {
+const orderExport = (data) => {
   return fetch({
     url: '/v1/order-delivery/order-export',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -1336,7 +1293,7 @@ const receiptMonthly = (params) => {
   return fetch({
     url: '/v1/receipt-monthly',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1347,7 +1304,7 @@ const downlodaOrder = (params) => {
   return fetch({
     url: '/v1/order-delivery/order-delivery-export',
     method: 'get',
-    params: params,
+    params,
   })
 }
 
@@ -1368,29 +1325,29 @@ const receiptMonthlyReceipt = (params) => {
   return fetch({
     url: '/v1/receipt-monthly/receipt-view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /***
  * 订单收款 - 月结订单 - 批量收款
  */
-const receiptMonthlyDouble = (params) => {
+const receiptMonthlyDouble = (data) => {
   return fetch({
     url: '/v1/receipt-monthly/receipt',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /***
  * 订单发货-通知发货
  */
-const NotificationOfDelivery = (params) => {
+const NotificationOfDelivery = (data) => {
   return fetch({
     url: '/v1/order-delivery/notice',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -1401,7 +1358,7 @@ const realSales = (params) => {
   return fetch({
     url: '/v1/receipt-real-sales',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1422,18 +1379,18 @@ const realSalesReceipt = (params) => {
   return fetch({
     url: '/v1/receipt-real-sales/receipt-view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /***
  * 订单收款 -  实销实结 - 批量收款
  */
-const realSalesDouble = (params) => {
+const realSalesDouble = (data) => {
   return fetch({
     url: '/v1/receipt-real-sales/receipt',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /***
@@ -1443,7 +1400,7 @@ const deliverSetDetail = (params) => {
   return fetch({
     url: '/v1/order-delivery/query-detail',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 /**
@@ -1453,18 +1410,18 @@ const orderReviewGetDiscountLimit = (params) => {
   return fetch({
     url: '/v1/order/get-limit',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * 订单发货-发货设置
  * */
-const submitSet = (params) => {
+const submitSet = (data) => {
   return fetch({
     url: `/v1/order-delivery/${params.id}`,
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -1475,62 +1432,62 @@ const employeeFilesList = (params) => {
   return fetch({
     url: '/v1/employee',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *员工档案-列表
  * */
- const getEmployeeFilesList = (params) => {
+const getEmployeeFilesList = (params) => {
   return fetch({
     url: '/v2/employee',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *员工档案-编辑
  * */
-const employeeFilesUpdate = (params) => {
+const employeeFilesUpdate = (data) => {
   return fetch({
     url: '/v1/employee/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *员工档案 - 编辑
  * */
- const updateEmployeeFilesUpdate = (params) => {
+const updateEmployeeFilesUpdate = (data) => {
   return fetch({
     url: '/v2/employee/update',
     method: 'PUT',
-    data: params,
+    data,
   })
 }
 
 /**
  *员工档案-启用/禁用
  * */
-const employeeFilesDisable = (params) => {
+const employeeFilesDisable = (data) => {
   return fetch({
     url: '/v1/employee/disable',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *员工档案-启用/禁用
  * */
- const setEmployeeFilesStatus = (params) => {
+const setEmployeeFilesStatus = (data) => {
   return fetch({
     url: '/v2/employee/status',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -1541,18 +1498,18 @@ const employeeFilesDetail = (params) => {
   return fetch({
     url: '/v1/employee/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *员工档案-详情
  * */
- const getEmployeeFilesDetail = (params) => {
+const getEmployeeFilesDetail = (params) => {
   return fetch({
     url: '/v2/employee/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1563,18 +1520,18 @@ const employeeFilesDelete = (params) => {
   return fetch({
     url: '/v1/employee/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
 /**
  *员工档案-删除
  * */
- const deletEemployeeFile = (params) => {
+const deletEemployeeFile = (params) => {
   return fetch({
     url: '/v2/employee/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -1585,7 +1542,7 @@ const employeeFilesGetJob = (params) => {
   return fetch({
     url: '/v1/search/jobs',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1596,7 +1553,7 @@ const employeeFilesGetDept = (params) => {
   return fetch({
     url: '/v1/search/dept',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1607,7 +1564,7 @@ const employeePreview = (params) => {
   return fetch({
     url: '/v1/employee/preview',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1616,7 +1573,7 @@ const rankingList = (params) => {
   return fetch({
     url: '/v1/user-ranking-video',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1625,7 +1582,7 @@ const getOrganizationDeptTree = (params) => {
   return fetch({
     url: '/v2/offline-dept/dept-tree',
     method: 'GET',
-    params: params
+    params,
   })
 }
 
@@ -1634,7 +1591,7 @@ const getOrganizationEmployeeList = (params) => {
   return fetch({
     url: '/v2/offline-dept/employee-list',
     method: 'GET',
-    params: params
+    params,
   })
 }
 
@@ -1643,25 +1600,25 @@ const getOrganizationDeptDetail = (params) => {
   return fetch({
     url: '/v2/offline-dept/view',
     method: 'GET',
-    params: params
+    params,
   })
 }
 
 // 员工管理 - 组织架构 - 新建部门
-const createOrganizationDept = (params) => {
+const createOrganizationDept = (data) => {
   return fetch({
     url: '/v2/offline-dept/create',
     method: 'POST',
-    data: params
+    data,
   })
 }
 
 // 员工管理 - 组织架构 - 设置部门
-const updateOrganizationDept = (params) => {
+const updateOrganizationDept = (data) => {
   return fetch({
     url: '/v2/offline-dept/update',
     method: 'PATCH',
-    data: params
+    data,
   })
 }
 
@@ -1670,25 +1627,25 @@ const deleteOrganizationDept = (params) => {
   return fetch({
     url: '/v2/offline-dept/delete',
     method: 'DELETE',
-    params: params
+    params,
   })
 }
 
 // 员工管理 - 组织架构 - 添加员工
-const addOrganizationEmployee = (params) => {
+const addOrganizationEmployee = (data) => {
   return fetch({
     url: '/v2/offline-dept/add-employee',
     method: 'POST',
-    data: params
+    data,
   })
 }
 
 // 员工管理 - 组织架构 - 添加员工
-const updateOrganizationEmployee = (params) => {
+const updateOrganizationEmployee = (data) => {
   return fetch({
     url: '/v2/offline-dept/update-employee',
     method: 'PATCH',
-    data: params
+    data,
   })
 }
 
@@ -1716,7 +1673,7 @@ const contractorApplyList = (params) => {
   return fetch({
     url: '/v1/wechat-contractor-apply',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1727,29 +1684,29 @@ const contractorApplyApply = (params) => {
   return fetch({
     url: '/v1/wechat-contractor-apply/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *合作商管理-申请合作商-确认受理
  * */
-const contractorApplyAccept = (params) => {
+const contractorApplyAccept = (data) => {
   return fetch({
     url: '/v1/wechat-contractor-apply/accept',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *合作商管理-申请合作商-处理受理
  * */
-const contractorApplyProcess = (params) => {
+const contractorApplyProcess = (data) => {
   return fetch({
     url: '/v1/wechat-contractor-apply/process',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -1771,7 +1728,7 @@ const appletHomeSettingIndex = (params) => {
   return fetch({
     url: '/v1/applet-home-setting/index',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1782,7 +1739,7 @@ const appletHomeSettingPreview = (params) => {
   return fetch({
     url: '/v1/applet-home-setting/preview',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1799,44 +1756,44 @@ const appletHomeSettingSetting = (id) => {
 /**
  *商品管理-首页设置-编辑
  * */
-const appletHomeSettingUpdate = (params) => {
+const appletHomeSettingUpdate = (data) => {
   return fetch({
     url: '/v1/applet-home-setting/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *商品管理-首页设置-添加
  * */
-const appletHomeSettingCreate = (params) => {
+const appletHomeSettingCreate = (data) => {
   return fetch({
     url: '/v1/applet-home-setting/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  *商品管理-首页设置-启用
  * */
-const appletHomeSettingUse = (params) => {
+const appletHomeSettingUse = (data) => {
   return fetch({
     url: '/v1/applet-home-setting/use',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *商品管理-首页设置-停用
  * */
-const appletHomeSettingNotUse = (params) => {
+const appletHomeSettingNotUse = (data) => {
   return fetch({
     url: '/v1/applet-home-setting/not-use',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -1847,7 +1804,7 @@ const appletHomeSettingView = (params) => {
   return fetch({
     url: '/v1/applet-home-setting/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1858,7 +1815,7 @@ const attendanceList = (params) => {
   return fetch({
     url: '/v1/checkin-management',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1869,7 +1826,7 @@ const attendanceDetail = (params) => {
   return fetch({
     url: '/v1/checkin-management/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1880,7 +1837,7 @@ const attendanceSurveyList = (params) => {
   return fetch({
     url: '/v1/checkin-management/survey-list',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1891,7 +1848,7 @@ const attendanceExport = (params) => {
   return fetch({
     url: '/v1/checkin-management/export',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1900,7 +1857,7 @@ const guideList = (params) => {
   return fetch({
     url: '/v1/checkin-prettify-management',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1909,7 +1866,7 @@ const getDerive = (data) => {
   return fetch({
     url: '/v1/checkin-prettify-management/export',
     method: 'POST',
-    data: data,
+    data,
   })
 }
 
@@ -1918,7 +1875,7 @@ const guideDeit = (params) => {
   return fetch({
     url: '/v1/checkin-prettify-management/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1929,7 +1886,7 @@ const policyDraftList = (params) => {
   return fetch({
     url: '/v1/contract-policy-draft',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -1940,62 +1897,62 @@ const policyDraftListv2 = (params) => {
   return fetch({
     url: '/v2/contract-policy-draft',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *政策管理 - 政策草稿箱 - 添加
  * */
-const policyDraftAdd = (params) => {
+const policyDraftAdd = (data) => {
   return fetch({
     url: '/v1/contract-policy-draft',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  *政策管理 - 政策草稿箱 - 添加v2
  * */
-const policyDraftAddv2 = (params) => {
+const policyDraftAddv2 = (data) => {
   return fetch({
     url: '/v2/contract-policy-draft/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  *政策管理 - 政策草稿箱 - 修改
  * */
-const policyDraftUpdate = (params) => {
+const policyDraftUpdate = (data) => {
   return fetch({
     url: '/v1/contract-policy-draft/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *政策管理 - 政策草稿箱 - 修改v2
  * */
-const policyDraftUpdatev2 = (params, id) => {
+const policyDraftUpdatev2 = (data, id) => {
   return fetch({
     url: `/v2/contract-policy-draft/update?id=${id}`,
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *政策管理 - 政策草稿箱 - 提交
  * */
-const policyDraftSubmit = (params) => {
+const policyDraftSubmit = (data) => {
   return fetch({
     url: '/v1/contract-policy-draft/submit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -2006,7 +1963,7 @@ const policyDraftDelete = (params) => {
   return fetch({
     url: `/v1/contract-policy-draft/${params.id}`,
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2017,7 +1974,7 @@ const policyDraftDeletev2 = (params) => {
   return fetch({
     url: `/v2/contract-policy-draft/delete?id=${params.id}`,
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2028,40 +1985,40 @@ const contractorDraftList = (params) => {
   return fetch({
     url: '/v1/contractor-draft',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *合作商管理 - 合作商草稿 - 添加
  * */
-const contractorDraftAdd = (params) => {
+const contractorDraftAdd = (data) => {
   return fetch({
     url: '/v1/contractor-draft/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  *合作商管理 - 合作商草稿 - 修改
  * */
-const contractorDraftUpdate = (params) => {
+const contractorDraftUpdate = (data) => {
   return fetch({
     url: '/v1/contractor-draft/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *合作商管理 - 合作商-收货地址 - 添加
  * */
-const contractorAddAddress = (params) => {
+const contractorAddAddress = (data) => {
   return fetch({
     url: '/v2/contractor-addr-group/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -2079,21 +2036,21 @@ const contractorTemplateAddress = (params) => {
 /**
  *合作商管理 - 合作商-收货地址 - 修改
  * */
-const contractorEditAddress = (params) => {
+const contractorEditAddress = (data) => {
   return fetch({
     url: '/v2/contractor-addr-group/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 /**
  *合作商管理 - 合作商-收货地址 - 导入
  * */
-const contractorPushAddress = (params) => {
+const contractorPushAddress = (data) => {
   return fetch({
     url: '/v2/contractor-addr-group/import',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 /**
@@ -2103,7 +2060,7 @@ const contractorDelAddress = (params) => {
   return fetch({
     url: '/v2/contractor-addr-group/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 /**
@@ -2120,11 +2077,11 @@ const contractorTabAddress = (params) => {
 /**
  *合作商管理 - 合作商-门店地址 - 添加
  * */
-const contractorAddShopInfo = (params) => {
+const contractorAddShopInfo = (data) => {
   return fetch({
     url: '/v2/facade/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -2141,21 +2098,21 @@ const contractorTemplateShop = (params) => {
 /**
  *合作商管理 - 合作商-门店地址 - 修改
  * */
-const contractorEditShopInfo = (params) => {
+const contractorEditShopInfo = (data) => {
   return fetch({
     url: '/v2/facade/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 /**
  *合作商管理 - 合作商-门店地址 - 导入
  * */
-const contractorPushShopInfo = (params) => {
+const contractorPushShopInfo = (data) => {
   return fetch({
     url: '/v2/facade/import',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 /**
@@ -2165,7 +2122,7 @@ const contractorDelShopInfo = (params) => {
   return fetch({
     url: '/v2/facade/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 /**
@@ -2186,7 +2143,7 @@ const contractorOperationLog = (params) => {
   return fetch({
     url: '/v2/operation-log',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2197,29 +2154,29 @@ const contractorFacadeDetail = (params) => {
   return fetch({
     url: '/v2/facade/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *合作商管理 - 客户门店 - 零售分配
  * */
-const contractorFacadeAllocate = (params) => {
+const contractorFacadeAllocate = (data) => {
   return fetch({
     url: '/v2/facade/allocate',
     method: 'PUT',
-    data: params,
+    data,
   })
 }
 
 /**
  *合作商管理 - 客户门店 - 收回
  * */
-const contractorFacadeReturn = (params) => {
+const contractorFacadeReturn = (data) => {
   return fetch({
     url: '/v2/facade/return',
     method: 'PUT',
-    data: params,
+    data,
   })
 }
 
@@ -2234,11 +2191,11 @@ const contractorFacadeReturn = (params) => {
 // 	})
 // }
 // v2版本
-const contractorDraftSubmit = (params) => {
+const contractorDraftSubmit = (data) => {
   return fetch({
     url: '/v2/contractor-draft/submit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 /**
@@ -2248,7 +2205,7 @@ const contractorDraftDelete = (params) => {
   return fetch({
     url: '/v1/contractor-draft/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2259,29 +2216,29 @@ const orderDraftList = (params) => {
   return fetch({
     url: '/v1/order-draft',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *订单管理 - 订单草稿 - 添加
  * */
-const orderDraftAdd = (params) => {
+const orderDraftAdd = (data) => {
   return fetch({
     url: '/v1/order-draft',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  *订单管理 - 订单草稿 - 修改
  * */
-const orderDraftUpdate = (params) => {
+const orderDraftUpdate = (data) => {
   return fetch({
     url: `/v1/order-draft/${params.id}`,
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -2292,7 +2249,7 @@ const orderDraftDelete = (params) => {
   return fetch({
     url: '/v1/order-draft/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2313,18 +2270,18 @@ const developerContractorList = (params) => {
   return fetch({
     url: '/v1/developer-contractor/index',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *合作商管理 - 开发合作商 - 导出
  * */
-const developerContractorExport = (params) => {
+const developerContractorExport = (data) => {
   return fetch({
     url: '/v1/developer-contractor/contractor-export',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -2335,7 +2292,7 @@ const developerContractorDetail = (params) => {
   return fetch({
     url: '/v1/developer-contractor/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2346,7 +2303,7 @@ const cuePoolList = (params) => {
   return fetch({
     url: '/v2/leads',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2357,7 +2314,7 @@ const cuePoolDeatil = (params) => {
   return fetch({
     url: '/v2/leads/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2368,18 +2325,18 @@ const cuePoolGetCompanyInfo = (params) => {
   return fetch({
     url: '/v2/company-info',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * 合作商管理 - 线索池 - 更新信息
  * */
-const cuePoolUpdateCompanyInfo = (params) => {
+const cuePoolUpdateCompanyInfo = (data) => {
   return fetch({
     url: '/v2/leads/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -2390,7 +2347,7 @@ const cuePoolDelCompanyInfo = (params) => {
   return fetch({
     url: '/v2/leads/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2401,7 +2358,7 @@ const cuePoolLog = (params) => {
   return fetch({
     url: '/v2/contractor/log',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2412,7 +2369,7 @@ const cuePoolExport = (params) => {
   return fetch({
     url: '/v2/leads/export',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2423,7 +2380,7 @@ const potentialCustomerList = (params) => {
   return fetch({
     url: '/v2/potential-customer',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2434,7 +2391,7 @@ const potentialCustomerDeatil = (params) => {
   return fetch({
     url: '/v2/potential-customer/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2445,73 +2402,73 @@ const potentialCustomerDelete = (params) => {
   return fetch({
     url: '/v2/potential-customer/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
 /**
  * 合作商管理 - 潜在客户 - 添加
  * */
-const potentialCustomerCreate = (params) => {
+const potentialCustomerCreate = (data) => {
   return fetch({
     url: '/v2/potential-customer/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 潜在客户 - 编辑更新
  * */
-const potentialCustomerUpdate = (params) => {
+const potentialCustomerUpdate = (data) => {
   return fetch({
     url: '/v2/potential-customer/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 潜在客户 - 申请保护
  * */
-const potentialCustomerProtect = (params) => {
+const potentialCustomerProtect = (data) => {
   return fetch({
     url: '/v2/potential-customer/protect',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 潜在客户 - 确认合作
  * */
-const potentialCustomerCooperate = (params) => {
+const potentialCustomerCooperate = (data) => {
   return fetch({
     url: '/v2/potential-customer/cooperate',
     method: 'PUT',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 潜在客户 - 收回
  * */
-const potentialCustomerWithdraw = (params) => {
+const potentialCustomerWithdraw = (data) => {
   return fetch({
     url: '/v2/potential-customer/withdraw',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 潜在客户 - 分配
  * */
-const potentialCustomerAllocate = (params) => {
+const potentialCustomerAllocate = (data) => {
   return fetch({
     url: '/v2/potential-customer/allocate',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -2522,7 +2479,7 @@ const potentialCustomerExport = (params) => {
   return fetch({
     url: '/v2/potential-customer/export',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2533,7 +2490,7 @@ const cooperativeCustomerList = (params) => {
   return fetch({
     url: '/v2/partner',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2544,18 +2501,18 @@ const cooperativeCustomerDeatil = (params) => {
   return fetch({
     url: '/v2/partner/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 详情 - 拜访记录
  * */
- const cooperativeCustomerDeatilCheckinLog = (params) => {
+const cooperativeCustomerDeatilCheckinLog = (params) => {
   return fetch({
     url: '/v2/partner/checkin-log',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2566,7 +2523,7 @@ const cooperativeCustomerSearchPartner = (params) => {
   return fetch({
     url: '/v2/partner/search',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2577,73 +2534,73 @@ const cooperativeCustomerDelete = (params) => {
   return fetch({
     url: '/v2/partner/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 添加
  * */
-const cooperativeCustomerAdd = (params) => {
+const cooperativeCustomerAdd = (data) => {
   return fetch({
     url: '/v2/partner/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 编辑
  * */
-const cooperativeCustomerUpdate = (params) => {
+const cooperativeCustomerUpdate = (data) => {
   return fetch({
     url: '/v2/partner/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 商务分配
  * */
-const cooperativeCustomerAssign = (params) => {
+const cooperativeCustomerAssign = (data) => {
   return fetch({
     url: '/v2/partner/assign',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 审核
  * */
-const cooperativeCustomerAudit = (params) => {
+const cooperativeCustomerAudit = (data) => {
   return fetch({
     url: '/v2/partner/audit',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 收回
  * */
-const cooperativeCustomerRevoke = (params) => {
+const cooperativeCustomerRevoke = (data) => {
   return fetch({
     url: '/v2/partner/revoke',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 合作设置
  * */
-const cooperativeCustomerSetting = (params) => {
+const cooperativeCustomerSetting = (data) => {
   return fetch({
     url: '/v2/partner/setting-cooperate',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -2654,7 +2611,7 @@ const cooperativeCustomerChildCustomer = (params) => {
   return fetch({
     url: '/v2/partner/child-customer',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2665,29 +2622,29 @@ const cooperativeContactsList = (params) => {
   return fetch({
     url: '/v2/contacts',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 客户编辑 - 添加联系人
  * */
-const cooperativeContactsCreate = (params) => {
+const cooperativeContactsCreate = (data) => {
   return fetch({
     url: '/v2/contacts/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 合作商管理 - 合作客户 - 客户编辑 - 编辑联系人
  * */
-const cooperativeContactsUpdate = (params) => {
+const cooperativeContactsUpdate = (data) => {
   return fetch({
     url: '/v2/contacts/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -2698,7 +2655,7 @@ const cooperativeContactsDelete = (params) => {
   return fetch({
     url: '/v2/contacts/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2709,7 +2666,7 @@ const contractorContactsExport = (params) => {
   return fetch({
     url: '/v2/contacts/export',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2717,11 +2674,11 @@ const contractorContactsExport = (params) => {
 /**
  * 合作商管理 - 搜索系统信息
  * */
- const getSystemInfo = (params) => {
+const getSystemInfo = (params) => {
   return fetch({
     url: '/v2/facade/system-info',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2732,7 +2689,7 @@ const getPartnerPolicy = (params) => {
   return fetch({
     url: '/v2/contractor/get-partner-policy-array',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2743,18 +2700,18 @@ const developerContractorConfirmDetail = (params) => {
   return fetch({
     url: '/v1/developer-contractor/confirm',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *合作商管理 - 开发合作商 - 确认合同 - 提交确认操作
  * */
-const developerContractorConfirm = (params) => {
+const developerContractorConfirm = (data) => {
   return fetch({
     url: '/v1/developer-contractor/confirm',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -2765,7 +2722,7 @@ const developerContractorConfirmShow = (params) => {
   return fetch({
     url: '/v1/developer-contractor/contractor',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2776,29 +2733,29 @@ const accountList = (params) => {
   return fetch({
     url: '/v2/account',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *客户管理 - 账号管理 - 添加账号
  * */
-const addAccount = (params) => {
+const addAccount = (data) => {
   return fetch({
     url: '/v2/account/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  *客户管理 - 账号管理 - 编辑账号
  * */
-const accountUpdate = (params) => {
+const accountUpdate = (data) => {
   return fetch({
     url: '/v2/account/update',
     method: 'PUT',
-    data: params,
+    data,
   })
 }
 
@@ -2809,7 +2766,7 @@ const accountDelete = (params) => {
   return fetch({
     url: '/v2/account/delete?id={id}',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2820,7 +2777,7 @@ const accountDetail = (params) => {
   return fetch({
     url: '/v2/account/view?id={id}',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2831,7 +2788,7 @@ const salesReviewList = (params) => {
   return fetch({
     url: '/v1/sales-order-management/index',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2842,40 +2799,40 @@ const salesReviewDetail = (params) => {
   return fetch({
     url: '/v1/sales-order-management/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *销售单管理 - 新增
  * */
-const salesReviewCreate = (params) => {
+const salesReviewCreate = (data) => {
   return fetch({
     url: '/v1/sales-order-management/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  *销售单管理 - 编辑
  * */
-const salesReviewEdit = (params) => {
+const salesReviewEdit = (data) => {
   return fetch({
     url: '/v1/sales-order-management/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *销售单管理 - 审核
  * */
-const salesReviewAudit = (params) => {
+const salesReviewAudit = (data) => {
   return fetch({
     url: '/v1/sales-order-management/audit',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -2886,7 +2843,7 @@ const salesReviewDelete = (params) => {
   return fetch({
     url: '/v1/sales-order-management/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2897,7 +2854,7 @@ const stockReviewList = (params) => {
   return fetch({
     url: '/v1/stock-order-management/index',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -2908,40 +2865,40 @@ const stockReviewDetail = (params) => {
   return fetch({
     url: '/v1/stock-order-management/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *库存单管理 - 新增
  * */
-const stockReviewCreate = (params) => {
+const stockReviewCreate = (data) => {
   return fetch({
     url: '/v1/stock-order-management/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  *库存单管理 - 编辑
  * */
-const stockReviewEdit = (params) => {
+const stockReviewEdit = (data) => {
   return fetch({
     url: '/v1/stock-order-management/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  *库存单管理 - 审核
  * */
-const stockReviewAudit = (params) => {
+const stockReviewAudit = (data) => {
   return fetch({
     url: '/v1/stock-order-management/audit',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -2952,7 +2909,7 @@ const stockReviewDelete = (params) => {
   return fetch({
     url: '/v1/stock-order-management/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
@@ -2963,7 +2920,7 @@ const facadeQuery = (params) => {
   return fetch({
     url: '/v1/order/query-facade',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 /**
@@ -2973,7 +2930,7 @@ const getContractDetailOrder = (params) => {
   return fetch({
     url: '/v1/contractor-detail/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 const getContractoreDetail = (params) => {
@@ -2989,29 +2946,29 @@ const getContractoreTable = (params) => {
   return fetch({
     url: '/v1/contractor-detail',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * 商品设置-导入下载商品
  * */
-const productTemplate = (params) => {
+const productTemplate = (data) => {
   return fetch({
     url: '/v1/product/product-template',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 商品设置-详情设置
  * */
-const productDetailSetting = (params) => {
+const productDetailSetting = (data) => {
   return fetch({
     url: '/v1/product/detail-setting',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -3028,33 +2985,33 @@ const productEditItemNum = (params) => {
 /**
  * 商品设置-选择导入文件
  * */
-const productImport = (params) => {
+const productImport = (data) => {
   return fetch({
     url: '/v1/product/product-import',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 商品设置-选择导出
  * */
-const productExport = (params) => {
+const productExport = (data) => {
   return fetch({
     url: '/v1/product/product-export',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 商品设置-产品图片预览
  * */
-const productPreview = (params) => {
+const productPreview = (data) => {
   return fetch({
     url: '/v1/product/preview',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -3065,7 +3022,7 @@ const merchantActivityListLndex = (params) => {
   return fetch({
     url: '/v1/merchant-activity-list/index',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -3076,29 +3033,29 @@ const merchantActivityListPreview = (params) => {
   return fetch({
     url: '/v1/merchant-activity-list/preview',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * 商品设置-显示
  * */
-const merchantActivityListShow = (params) => {
+const merchantActivityListShow = (data) => {
   return fetch({
     url: '/v1/merchant-activity-list/show',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * 商品设置-隐藏
  * */
-const merchantActivityListNotShow = (params) => {
+const merchantActivityListNotShow = (data) => {
   return fetch({
     url: '/v1/merchant-activity-list/not-show',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -3116,22 +3073,22 @@ const merchantActivityListDel = (id) => {
 /**
  * 商品设置-新增海报
  * */
-const merchantActivityListCreate = (params) => {
+const merchantActivityListCreate = (data) => {
   return fetch({
     url: '/v1/merchant-activity-list/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * 商品设置-编辑
  * */
-const merchantActivityListUpdate = (params) => {
+const merchantActivityListUpdate = (data) => {
   return fetch({
     url: '/v1/merchant-activity-list/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -3142,7 +3099,7 @@ const merchantActivityListView = (params) => {
   return fetch({
     url: '/v1/merchant-activity-list/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -3153,7 +3110,7 @@ const informationListLndex = (params) => {
   return fetch({
     url: '/v1/information-list/index',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -3164,7 +3121,7 @@ const informationListPreviewS = (params) => {
   return fetch({
     url: '/v1/information-list/preview',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -3175,7 +3132,7 @@ const informationListView = (params) => {
   return fetch({
     url: '/v1/information-list/view',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
@@ -3186,51 +3143,51 @@ const informationListPreview = (params) => {
   return fetch({
     url: '/v1/information-listt/preview7',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  * WIS-资讯列表-添加
  * */
-const informationListCreate = (params) => {
+const informationListCreate = (data) => {
   return fetch({
     url: '/v1/information-list/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
 /**
  * WIS-资讯列表-编辑
  * */
-const informationListUpdate = (params) => {
+const informationListUpdate = (data) => {
   return fetch({
     url: '/v1/information-list/update',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * WIS-资讯列表-显示
  * */
-const informationListShow = (params) => {
+const informationListShow = (data) => {
   return fetch({
     url: '/v1/information-list/show',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
 /**
  * WIS-资讯列表-隐藏
  * */
-const informationListNotShow = (params) => {
+const informationListNotShow = (data) => {
   return fetch({
     url: '/v1/information-list/not-show',
     method: 'PATCH',
-    data: params,
+    data,
   })
 }
 
@@ -3251,18 +3208,18 @@ const nailingListShow = (params) => {
   return fetch({
     url: '/v1/manage-notice-ding/index',
     method: 'GET',
-    params: params,
+    params,
   })
 }
 
 /**
  *通知管理-钉钉通知-添加通知
  * */
-const nailingListAdd = (params) => {
+const nailingListAdd = (data) => {
   return fetch({
     url: '/v1/manage-notice-ding/create',
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -3284,16 +3241,16 @@ const nailingListDel = (params) => {
   return fetch({
     url: '/v1/manage-notice-ding/delete',
     method: 'DELETE',
-    params: params,
+    params,
   })
 }
 
 // 员工档案 - 导入目标
-const importEmployeeTarget = (params) => {
+const importEmployeeTarget = (data) => {
   return fetch({
     url: `/v1/employee/import-target`,
     method: 'POST',
-    data: params,
+    data,
   })
 }
 
@@ -3361,13 +3318,8 @@ export default {
   contractorAudit,
   contractorDelete,
   contractPolicy,
-  accountManagementList,
-  accountManagementUnbind,
-  accountManagementDetails,
-  accountManagementTabAudit,
   salesmanData,
   contractorExport,
-  contractorImport,
   contractorUpdate,
   orderReviewQueryProductDiscount,
   orderReviewGetDiscountLimit,
@@ -3386,10 +3338,9 @@ export default {
   contractPoliceList,
   contractPoliceListv2, // 列表v2
   addContractPolice,
-  addContractPolicev2, // 添加v2
+  v2CreateContractPolicy, // 添加v2
   getCategoryData,
   getCategoryList, //v2
-  getProductList, //v2
   getProductCategoryList, //v2
   getRegularProductList, //v2
   addRegularProductList, //v2
@@ -3398,13 +3349,13 @@ export default {
   delRegularProductList, //v2
   getProductData,
   getContractPoliceDetail,
-  getContractPoliceDetailv2, //合同政策管理 - 详情
+  v2GetContractPolicyDetail, //合同政策管理 - 详情
   auditContractPolice,
-  auditContractPolicev2, // 合同政策管理 - 审核
+  v2AuditContractPolicy, // 合同政策管理 - 审核
   contractPoliceDelete,
-  contractPoliceDeletev2, // 合同政策 删除
+  v2DeleteContractPolicy, // 合同政策 删除
   contractPoliceEdit,
-  contractPoliceEditv2,
+  v2UpdateContractPolicy,
   contractPoliceEnable,
   policyPartnerList,
   policyPartnerCreate,
@@ -3618,4 +3569,7 @@ export default {
   accountUpdate, //v2
   accountDelete, //v2
   accountDetail, //2
+  contractPolicyEnableStatus, // v2
+  v2GetContractPolicyDraftDetail, // v2
+  saveContractPolicyDraft, // v2
 }

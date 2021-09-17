@@ -152,12 +152,6 @@ export default {
             align: 'center',
             minWidth: 135,
           },
-					// {
-					// 	title: '部门中心',
-					// 	key: 'deptName',
-					// 	align: 'center',
-					// 	width: 180,
-					// },
           {
 						title: '系统部门',
 						key: 'offlineDeptName',

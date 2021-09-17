@@ -59,6 +59,7 @@
           <router-link to="/order-management/review-edit">
             <Button type="primary" v-permission="'/v1/order/create'">添加</Button>
           </router-link>
+          <Button type="primary" @click="handleShowDealModal">处理</Button>
           <Button type="primary" @click="tapAudit('dept')" v-permission="'/v1/order/manager-audit'">初审</Button>
           <Button type="primary" @click="tapAudit('manager')" v-permission="'/v1/order/director-audit'">复审</Button>
           <Button type="primary" @click="canCellation(checkList)" v-permission="'/v1/order/invalid'">作废</Button>
@@ -721,7 +722,7 @@
                   </td>
                 </tr>
                 <template v-for="(item,index1) in collectDetails.data.orderReceivable">
-                  <div :key="index1">
+                  <!-- <div :key="index1"> -->
                   <tr class="ivu-table-row">
                     <td class="head-bg">
                       <div class="ivu-table-cell">支付编号</div>
@@ -813,7 +814,7 @@
                     <td colspan="6">
                     </td>
                   </tr>
-                  </div>
+                  <!-- </div> -->
                 </template>
                 </tbody>
               </table>
@@ -827,6 +828,18 @@
         <Button type="default" @click="collectDetails.modal = false">关闭</Button>
       </div>
     </Modal>
+
+    <!-- 处理弹窗 start -->
+    <OrderDealModal
+      :show="dealModal.modal"
+      :data="dealModal.data"
+      :remote-method="queryShippingDeb"
+      :remote-loading="dealModal.remoteLoading"
+      :remote-data-list="dealModal.remoteDataList"
+      @on-ok="dealOnOk"
+      @on-cancel="dealModal.modal = false">
+    </OrderDealModal>
+    <!-- 处理弹窗 end -->
   </div>
 </template>
 
@@ -835,13 +848,15 @@
   import QRCode from 'qrcode'
   import {SERVER_BASE_URL} from '~/api/config';
   import PolicyDetail from '../my-components/policy-detail-modal';
+  import OrderDealModal from '@/components/order-management/order-deal-modal';
   import globalMixin from '~/plugins/mixin';
 
   export default {
     name: 'review',
     mixins: [globalMixin],
     components: {
-      PolicyDetail
+      PolicyDetail,
+      OrderDealModal
     },
     data() {
       return {
@@ -912,6 +927,8 @@
           Authorization: Cookies.get('authorization')
         },
         statusList: [
+          {value: 'OrderWorkflow/wait', label: '待处理'},
+          {value: 'OrderWorkflow/reject', label: '驳回'},
           {value: 'OrderWorkflow/auditPending', label: '待初审'},
           {value: 'OrderWorkflow/auditFailure', label: '初审未通过'},
           {value: 'OrderWorkflow/auditRecheckPending', label: '待复审'},
@@ -1268,8 +1285,8 @@
         // 审核
         auditList: {},
         orderType: [
-          {value: 'backstage', label: '后台添加'},
-          {value: 'MiniProgram', label: '小程序订单'}
+          {value: 'backstage', label: '后台'},
+          {value: 'MiniProgram', label: '钉钉'}
         ],
         orderTypeTranslate: {
           backstage: '后台添加',
@@ -1415,7 +1432,8 @@
             }
           },
           {
-            title: '付款方式',
+            // title: '付款方式',
+            title: '结款方式',
             key: 'payment_method',
             minWidth: 90,
             align: 'center',
@@ -1519,17 +1537,40 @@
           {value: 'undisposed', label: '未处理'},
           {value: 'disposed', label: '已处理'},
           {value: 'exception_handling', label: '异常处理'}
-        ]
+        ],
+        // 处理弹窗 - 对象集合
+        dealModal: {
+          modal: false,
+          data: {},
+          remoteLoading: false,
+          remoteDataList: []
+        },
+        queryShippingDeb: this.$debonce(this.queryShipping, 500),
       };
     },
     methods: {
+      /**
+       * 远程查询收货地址
+       * @param {String} value: 地址名称
+       */
+      async queryShipping(value) {
+        this.dealModal.remoteLoading = true;
+        // to-do: 查询收货地址API
+      },
+
+      /**
+       * 确认处理
+       */
+      async dealOnOk() {
+        // to-do: 处理API
+      },
+
       showOrderFile(file) {
         let url = SERVER_BASE_URL + '/' + file.url
         let a = document.createElement('a')
         a.setAttribute('id', 'openFile')
         a.setAttribute('href', url)
         a.setAttribute('target', '_blank')
-        // a.setAttribute('openFile', url.split('/').pop()) //分割路径，取出最后一个元素 点击自动下载文件失灵时启用
         if (document.getElementById('openFile')) {
           document.body.removeChild(document.getElementById('openFile'))
         }
@@ -2040,7 +2081,14 @@
       },
       openPolicyDetail() {
         this.$refs.policyDetail.getAgreeDetail(this.detailsList.data.contract_policy_id)
-      }
+      },
+
+      /**
+       * 订单 - 处理
+       */
+      handleShowDealModal() {
+        this.dealModal.modal = true;
+      },
     },
     activated () {
         const companyName = this.$route.query.companyName

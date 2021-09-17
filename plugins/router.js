@@ -113,7 +113,7 @@ export default [
       //   name: 'contract/partner-draft'
       // },
       {
-        title: '账号管理',
+        title: '账户管理',
         path: '/v1/we-chat-user-contractor/index',
         keepName: 'account',
         name: 'contract/account-management'

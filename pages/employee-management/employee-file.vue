@@ -9,10 +9,6 @@
             </Select>
             <Input v-model.trim="searchData.jobNumber" placeholder="请输入工号" style="width:150px"  clearable/>
             <Input v-model.trim="searchData.realName" placeholder="请输入姓名" style="width:150px" clearable/>
-            <!-- <Select  v-model.trim="searchData.deptId" style="width: 180px" placeholder="请输入部门-中心" filterable  remote :remote-method="getDeptDebonce" :loading="loadingSelect" @on-change="getList('search')" clearable>
-              <Option v-for="item in deptList" :key="item.id" :value="item.id" :label="item.deptname">
-              </Option>
-            </Select> -->
             <Select v-model.trim="searchData.jobStation" style="width: 180px" placeholder="请输入职位" filterable  remote :remote-method="getJobDebonce" :loading="loadingSelect" @on-change="getList('search')" clearable>
               <Option v-for="(item, index) in jobList" :key="index" :value="item.job_station" :label="item.job_station">
               </Option>
@@ -240,7 +236,6 @@
                 }, params.row.realName)
               }
             },
-            // { title: '部门-中心', key: 'deptName', align: 'center', minWidth: 200 },
             { title: '系统部门', key: 'offlineDeptName', align: 'center', minWidth: 200 },
             { title: '职位', key: 'jobStation', align: 'center', minWidth: 140 },
             { title: '联系方式', key: 'telephone', align: 'center', minWidth: 200 },

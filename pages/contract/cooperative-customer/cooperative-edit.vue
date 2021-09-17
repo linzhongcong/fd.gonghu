@@ -133,7 +133,6 @@
                 </Row>
                 <Row>
                   <Col :md="8">
-                  <!-- 待开发 -->
                     <FormItem label="开拓人：">
                       <Select
                         remote
@@ -142,6 +141,8 @@
                         label-in-value
                         :loading="queryLoading"
                         v-model="formData.salesmanId"
+                        :disabled="origin === 'customer'"
+                        :placeholder="origin === 'customer' ? '' : '请选择'"
                         :remote-method="(val) => queryEmployeeDebonce(val, 'employee')"
                         @on-change="(val) => selectOption(val, 'employee')">
                         <Option v-for="(item, index) in queryEmployeeList" :value="item.id" :label="item.full_name" :key="'emp' + index"></Option>

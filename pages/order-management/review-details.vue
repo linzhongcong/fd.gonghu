@@ -862,8 +862,8 @@ export default {
         },
         // 出货单下载
         downLoad () {
-        
-            this.$api.orderDeliveryExport(this.queryId)
+            const id = this.queryId;
+            this.$api.orderDeliveryExport({id})
           
                 .then(res => {
                     if (res.code == 0) {
