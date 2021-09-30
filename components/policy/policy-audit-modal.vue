@@ -499,7 +499,7 @@
                           </div>
                         </td>
                         <td class="head-bg">
-                          <div class="ivu-table-cell">换购产品</div>
+                          <div class="ivu-table-cell">满赠产品</div>
                         </td>
                         <td colspan="2">
                           <div class="ivu-table-cell">

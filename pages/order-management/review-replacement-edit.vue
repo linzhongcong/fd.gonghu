@@ -45,11 +45,19 @@
               <Row>
                 <Col :md="16">
                   <FormItem label="收货地址：" prop="contractor_addr_id">
-                    <Select v-model="formData.contractor_addr_id" placeholder="请选择收货地址">
+                    <Select v-model="formData.contractor_addr_id" filterable placeholder="请选择收货地址" @on-change="handleAddressOnChange">
                       <Option v-for="(item, index) in addressList" :key="'address' + index" :value="item.value"
                               :label="item.label"></Option>
                     </Select>
                   </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col :md="8">
+                  <FormItem label="联系人：">{{ formData.contactNameText }}</FormItem>
+                </Col>
+                <Col :md="8">
+                  <FormItem label="联系方式：">{{ formData.contactPhoneText }}</FormItem>
                 </Col>
               </Row>
               <Row>
@@ -1072,7 +1080,12 @@
         this.additionalProduct['配赠产品'][0].orderProduct = JSON.parse(JSON.stringify(matchingProduct))
         this.additionalProduct['返点产品'][0].orderProduct = JSON.parse(JSON.stringify(backPoint))
         this.additionalProduct['赠品'][0].orderProduct = JSON.parse(JSON.stringify(giftProduct))
-      }
+      },
+      // 收货地址变化事件
+      handleAddressOnChange(val) {
+        const addressInfo = this.addressList.find(item => item.value === val);
+        ['contactNameText', 'contactPhoneText'].forEach(key => this.formData[key] = addressInfo[key]);
+      },
     },
     mounted() {
       this.origin_id = this.$route.query.origin_id
@@ -1099,9 +1112,12 @@
             this.initAdditOrderPorduct(repurchaseProduct, matchingProduct, backPoint, giftProduct)
             // 获取收货地址
             this.addressList = contractorReceivingAddrGroup.map(item => {
+              console.log(item)
               const obj = {
                 value: item.id,
-                label: item.province + item.city + item.county + item.receiving_address
+                label: item.province + item.city + item.county + item.receiving_address,
+                contactNameText: item.contact,
+                contactPhoneText: item.contact_information,
               }
               return obj;
             })

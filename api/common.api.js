@@ -296,8 +296,8 @@ const productManagementDelete = (id) => {
  * */
 const orderReviewList = (params) => {
   return fetch({
-    url: '/v1/order/index',
-    method: 'get',
+    url: '/v2/order/index',
+    method: 'GET',
     params,
   })
 }
@@ -305,12 +305,14 @@ const orderReviewList = (params) => {
 /**
  * 订单审核-详情
  * */
-const orderReviewDetails = (id) => {
+const orderReviewDetails = (params) => {
   return fetch({
-    url: `/v1/order/${id}`,
-    method: 'get',
+    url: '/v2/order/view',
+    method: 'GET',
+    params,
   })
 }
+
 /**
  * 订单发货-下载
  * */
@@ -327,7 +329,7 @@ const orderDeliveryExport = (params) => {
  * */
 const orderReviewCreate = (data) => {
   return fetch({
-    url: '/v1/order/create',
+    url: '/v2/order/create',
     method: 'POST',
     data,
   })
@@ -338,11 +340,12 @@ const orderReviewCreate = (data) => {
  * */
 const orderReviewEdit = (data) => {
   return fetch({
-    url: '/v1/order/update',
-    method: 'PATCH',
+    url: '/v2/order/update',
+    method: 'PUT',
     data,
   })
 }
+
 /**
  * 作废订单-列表
  * */
@@ -359,37 +362,38 @@ const orderCancellationList = (params) => {
  * */
 const orderCancellation = (data) => {
   return fetch({
-    url: '/v1/order/invalid',
-    method: 'POST',
+    url: '/v2/order/invalid',
+    method: 'PATCH',
     data,
   })
 }
 /**
  * 订单审核-删除
  * */
-const orderReviewDelete = (id) => {
+const orderReviewDelete = (params) => {
   return fetch({
-    url: '/v1/order/' + id,
+    url: '/v2/order/delete',
     method: 'DELETE',
+    params
   })
 }
 /**
- * 订单审核-经理审核
+ * 订单审核-经理审核（初审）
  * */
 const orderReviewManagerAudit = (data) => {
   return fetch({
-    url: '/v1/order/manager-audit',
-    method: 'POST',
+    url: '/v2/order/manage-audit',
+    method: 'PATCH',
     data,
   })
 }
 /**
- * 订单审核-总监审核
+ * 订单审核-总监审核（复审）
  * */
 const orderReviewDirectorAudit = (data) => {
   return fetch({
-    url: '/v1/order/director-audit',
-    method: 'POST',
+    url: '/v2/order/director-audit',
+    method: 'PATCH',
     data,
   })
 }
@@ -433,6 +437,17 @@ const orderReviewDirectorAudit = (data) => {
 const orderReviewQueryContractor = (params) => {
   return fetch({
     url: '/v1/order/query-contractor',
+    method: 'GET',
+    params,
+  })
+}
+
+/**
+ * 订单审核-查询商家
+ * */
+ const v2GetOrderContractorList = (params) => {
+  return fetch({
+    url: '/v2/order/contractor-list',
     method: 'GET',
     params,
   })
@@ -554,6 +569,17 @@ const orderServiceClose = (data) => {
     url: '/v1/order-service/close',
     method: 'POST',
     data,
+  })
+}
+
+/**
+ * 订单管理 - 获取供货政策
+ */
+const getContractPolicy = (params) => {
+  return fetch({
+    url: '/v2/order/contract-policy-list',
+    method: 'GET',
+    params,
   })
 }
 
@@ -2232,13 +2258,24 @@ const orderDraftAdd = (data) => {
 }
 
 /**
- *订单管理 - 订单草稿 - 修改
+ *订单管理 - 保存草稿
  * */
-const orderDraftUpdate = (data) => {
+const saveOrderDraft = (data) => {
   return fetch({
-    url: `/v1/order-draft/${params.id}`,
-    method: 'PATCH',
+    url: '/v2/order/draft',
+    method: 'POST',
     data,
+  })
+}
+
+/**
+ *订单管理 - 草稿详情
+ * */
+const orderDraftDeatil = (params) => {
+  return fetch({
+    url: '/v2/order/draft-view',
+    method: 'GET',
+    params,
   })
 }
 
@@ -3284,6 +3321,7 @@ export default {
   sampleOrderReviewDirectorAudit,
   replacementOrderReviewManagerAudit,
   orderReviewQueryContractor,
+  v2GetOrderContractorList, // v2
   orderReviewQueryProduct,
   orderRefundList,
   orderRefundAdd,
@@ -3436,7 +3474,8 @@ export default {
   contractorTemplateAddress,
   orderDraftList,
   orderDraftAdd,
-  orderDraftUpdate,
+  saveOrderDraft,
+  orderDraftDeatil,
   orderDraftDelete,
   salesReviewList,
   salesReviewDetail,
@@ -3572,4 +3611,5 @@ export default {
   contractPolicyEnableStatus, // v2
   v2GetContractPolicyDraftDetail, // v2
   saveContractPolicyDraft, // v2
+  getContractPolicy, // v2
 }

@@ -98,7 +98,7 @@
     </Card>
 
     <!-- 弹窗 -->
-    <Modal
+      <Modal
       v-model="popupShow"
       :title="popupType === 'add' ? '添加账号' : '编辑账号'"
       width="550"
@@ -307,6 +307,7 @@
           >保存</Button
         >
       </div>
+      <Spin size="large" fix v-if="spinShow"></Spin>
     </Modal>
   </div>
 </template>
@@ -323,6 +324,7 @@ export default {
   },
   data() {
     return {
+      spinShow: false,
       // 筛选搜索区域数据
       formData: {
         ownership: "company",
@@ -433,7 +435,7 @@ export default {
           {
             required: true,
             message: "请输入公司名",
-            trigger: "blur",
+            trigger: "change",
           },
         ],
       },
@@ -510,6 +512,7 @@ export default {
         ],
       };
       if (prop === "popupForm" && type === "edit") {
+         this.spinShow = true
         this.getEdit(data);
       }
     },
@@ -542,8 +545,10 @@ export default {
     },
 
     selectCompany(target) {
-      target = target || {};
-      this.popupForm.contractorId = target.value;
+      // this.$nextTick(() => {
+      //   target = target || {};
+      // })
+      
     },
 
     companyKeyChange(query) {
@@ -611,8 +616,11 @@ export default {
         if (res.code === 0) {
           this.popupForm = JSON.parse(JSON.stringify(res.data));
           data.merchantName && this.queryCompany(data.merchantName);
+          this.spinShow = false
         }
-      } catch (err) {}
+      } catch (err) {
+        this.spinShow = false
+      }
     },
 
     // 删除

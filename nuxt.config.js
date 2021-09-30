@@ -36,6 +36,7 @@ module.exports = {
       src: '@/plugins/calendar',
       ssr: false
     },
+    '@/plugins/download',
     '@/plugins/api',
     '@/plugins/format',
     '@/plugins/bottom',
@@ -43,7 +44,8 @@ module.exports = {
     '@/plugins/img-modal',
     '@/plugins/table-list',
     '@/plugins/permission',
-    '@/plugins/debonce'
+    '@/plugins/debonce',
+    '@/plugins/to-fixed',
   ],
   /*
    ** Nuxt.js modules
