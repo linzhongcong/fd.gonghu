@@ -59,10 +59,48 @@
         <Button type="primary" icon="ios-search">搜索</Button>
       </Col>
       <Col span="24">
-        <Button type="primary">添加</Button>
+        <Button type="primary" @click="addStores">添加</Button>
         <Button type="primary">通过</Button>
         <Button type="primary">驳回</Button>
       </Col>
+    </Row>
+
+    <Row>
+      <Table
+        border
+        highlight-row
+        :columns="listData.columns"
+        :data="listData.data"
+        :loading="loadingTable"
+        size="small"
+      >
+        <!-- 操作 -->
+        <template slot-scope="{ row }" slot="action">
+          <Tooltip placement="top" content="编辑" transfer>
+            <Button
+              type="primary"
+              @click="addStores(row.id, 'edit')"
+              icon="md-create"
+              size="small"
+            ></Button>
+          </Tooltip>
+          <Poptip confirm title="您确认删除这条内容吗？" transfer>
+            <Button size="small" icon="md-trash"></Button>
+          </Poptip>
+        </template>
+      </Table>
+      <div style="margin: 10px; overflow: hidden">
+        <div class="pages-L">共 {{ pageProps.totalCount }} 条</div>
+        <div style="float: right">
+          <Page
+            :total="pageProps.totalCount"
+            size="small"
+            :current="pageProps.currentPage"
+            show-sizer
+            show-elevator
+          ></Page>
+        </div>
+      </div>
     </Row>
   </Card>
 </template>
@@ -75,6 +113,7 @@ export default {
   mixins: [mixins],
   data() {
     return {
+      loadingTable: false,
       area,
       // 搜索区域数据
       formData: {
@@ -96,6 +135,89 @@ export default {
         fourth: { value: "fourth", label: "四线城市" },
         fifth: { value: "fifth", label: "五线城市" },
       },
+      // 列表数据
+      listData: {
+        columns: [
+          { type: "selection", width: 60, align: "center" },
+          {
+            title: "门店编号",
+            key: "storesNumber",
+            minWidth: 100,
+            align: "center",
+          },
+          {
+            title: "门店名称",
+            key: "storesName",
+            minWidth: 130,
+            align: "center",
+          },
+          {
+            title: "门店修正地址",
+            key: "correctAddress",
+            minWidth: 180,
+            align: "center",
+          },
+          {
+            title: "门店原地址",
+            key: "sourceAddress",
+            minWidth: 180,
+            align: "center",
+          },
+          { title: "提交人", key: "submitOne", minWidth: 180, align: "center" },
+          {
+            title: "提交时间",
+            key: "submitTime",
+            minWidth: 180,
+            align: "center",
+          },
+          {
+            title: "零售负责人",
+            key: "followBy",
+            minWidth: 150,
+            align: "center",
+          },
+          {
+            title: "公司名称",
+            key: "merchantName",
+            minWidth: 200,
+            align: "center",
+          },
+          {
+            title: "系统/门店名称",
+            key: "systemName",
+            minWidth: 200,
+            align: "center",
+          },
+          {
+            title: "客户类型",
+            key: "merchantType",
+            minWidth: 100,
+            align: "center",
+          },
+          { slot: "action", title: "操作", minWidth: 100, align: "center" },
+        ],
+        data: [
+          {
+            id: "123",
+            storesNumber: "001",
+            storesName: "城市码农",
+            correctAddress: "上海世博大",
+            sourceAddress: "上海滩",
+            submitOne: "城市码农",
+            submitTime: "2021-10-27",
+            followBy: "linCong",
+            merchantName: "世界第一",
+            systemName: "OA系统",
+            merchantType: "Boss",
+          },
+        ],
+      },
+      pageProps: {
+        page: 1,
+        perPage: 10,
+        currentPage: 1,
+        totalCount: 0,
+      },
     };
   },
   methods: {
@@ -103,6 +225,18 @@ export default {
       ["province", "city", "county"].forEach(
         (key, index) => (this.formData[key] = data[index] && data[index].label)
       );
+    },
+    addStores(id, type) {
+      if (type === "edit") {
+        this.$router.push({
+          path: "/contract/address-audit/edit",
+          query: {
+            id,
+          },
+        });
+      } else {
+        this.$router.push("/contract/address-audit/edit");
+      }
     },
   },
 };

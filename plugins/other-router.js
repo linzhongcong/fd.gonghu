@@ -46,16 +46,17 @@ export default [
 
   { title: '商家详情', name: 'contract/customer-profile/info' },
 
-  { title: '拆分订单', name:'order-management/order-split' },
-  { title: '拆分补发订单', name:'order-delivery-management/replacement-deliver-split' },
-  { title: '拆分样品订单', name:'order-delivery-management/sample-deliver-split' },
+  { title: '拆分订单', name: 'order-management/order-split' },
+  { title: '拆分补发订单', name: 'order-delivery-management/replacement-deliver-split' },
+  { title: '拆分样品订单', name: 'order-delivery-management/sample-deliver-split' },
 
-  { title: '编辑潜在客户', name: 'contract/potential-customer/customer-edit'},
-  { title: '客户详情', name: 'contract/potential-customer/customer-detail'},
-  { title: '合作客户详情', name: 'contract/cooperative-customer/cooperative-detail'},
-  { title: '编辑合作客户', name: 'contract/cooperative-customer/cooperative-edit'},
-  { title: '编辑门店', name: 'contract/facade/edit'},
-  { title: '门店详情', name: 'contract/facade/detail'},
+  { title: '编辑潜在客户', name: 'contract/potential-customer/customer-edit' },
+  { title: '客户详情', name: 'contract/potential-customer/customer-detail' },
+  { title: '合作客户详情', name: 'contract/cooperative-customer/cooperative-detail' },
+  { title: '编辑合作客户', name: 'contract/cooperative-customer/cooperative-edit' },
+  { title: '编辑门店', name: 'contract/facade/edit' },
+  { title: '门店详情', name: 'contract/facade/detail' },
+  { title: '添加门店', name: 'contract/address-audit/edit' },
 
   // { path:'inform-management/notice-edit', title:'编辑通知', name:'inform-management/notice-edit'}
 
