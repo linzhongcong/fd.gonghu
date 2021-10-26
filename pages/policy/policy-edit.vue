@@ -5,24 +5,24 @@
         <Button style="margin-right: 10px;" type="warning" :loading="draftBtnLoading" :disabled="submitBtnLoading" @click="handleDraft">保存为草稿</Button>
         <Button type="success" :loading="submitBtnLoading" :disabled="draftBtnLoading" @click="handleSubmit">提交</Button>
       </Row>
-      <Form ref="form1" :model="baseInfo" :rules="baseInfoRules" :label-width="75" label-position="left">
+      <Form ref="form1" :model="formData" :rules="baseInfoRules" :label-width="75" label-position="left">
         <!-- 基础信息 start -->
         <Card>
           <div slot="title"><span class="content-title">基础信息</span></div>
           <Row>
             <Col :md="7">
               <FormItem :label-width="85" label="政策名称：" prop="policyName">
-                <Input v-model="baseInfo.policyName" placeholder="请输入" />
+                <Input v-model="formData.policyName" placeholder="请输入" />
               </FormItem>
             </Col>
             <Col :md="7">
               <FormItem :label-width="110" label="有效截止日期：" prop="deadlineAt">
-                <DatePicker v-model="baseInfo.deadlineAt" type="date" placeholder="请选择有效截止日期"></DatePicker>
+                <DatePicker v-model="formData.deadlineAt" type="date" placeholder="请选择有效截止日期"></DatePicker>
               </FormItem>
             </Col>
             <Col :md="7">
               <FormItem label="税额扣减：" prop="taxDeduction">
-                <Input style="width: 70px;" v-model="baseInfo.taxDeduction" />%
+                <Input style="width: 70px;" v-model="formData.taxDeduction" />%
               </FormItem>
             </Col>
           </Row>
@@ -34,19 +34,19 @@
           <Row>
             <Col :md="14">
               <FormItem prop="regularType">
-                <RadioGroup v-model="baseInfo.regularType" @on-change="handleRadioOnChange">
+                <RadioGroup v-model="formData.regularType" @on-change="handleRadioOnChange">
                   <Radio label="contractor">指定客户</Radio>
                   <div style="display: inline-block;">
                     <Row type="flex">
                       <Radio label="type">指定客户类型：</Radio>
                       <FormItem 
                         prop="assignMerchantType"
-                        :rules="baseInfo.regularType === 'type' ? { required: true, message: '该项目不能为空', trigger: 'change'} : {}">
-                        <Select v-model="baseInfo.assignMerchantType" :disabled="baseInfo.regularType === 'contractor'" style="width: 100px;">
-                          <Option v-for="(item, index) in merchantType"
+                        :rules="formData.regularType === 'type' ? { required: true, message: '该项目不能为空', trigger: 'change'} : {}">
+                        <Select v-model="formData.assignMerchantType" :disabled="formData.regularType === 'contractor'" style="width: 100px;">
+                          <Option v-for="(item, index) in merchantTypeOptions"
                             :value="item.value"
                             :label="item.label"
-                            :key="`merchantType${index}`">
+                            :key="`merchantTypeOptions${index}`">
                           </Option>
                         </Select>
                       </FormItem>
@@ -56,14 +56,14 @@
               </FormItem>
             </Col>
           </Row>
-          <div v-show="baseInfo.regularType === 'contractor'">
-            <Row v-for="(contractor, index) in baseInfo.regularContractorList" :key="`company${index}`">
+          <div v-show="formData.regularType === 'contractor'">
+            <Row v-for="(contractor, index) in formData.regularContractorList" :key="`company${index}`">
               <Col :md="7">
                 <FormItem
                   label="公司名称："
                   :label-width="85"
                   :prop="`regularContractorList.${index}.contractorId`"
-                  :rules="baseInfo.regularType === 'contractor' ? { required: true, message: '该选项不能为空', trigger: 'change' } : {}"
+                  :rules="formData.regularType === 'contractor' ? { required: true, message: '该选项不能为空', trigger: 'change' } : {}"
                   >
                   <Select
                     v-model="contractor.contractorId"
@@ -86,64 +86,65 @@
                 </FormItem>
               </Col>
               <Col :md="7">
-                <Button v-if="index === 0" @click="handleOnAddOption('regularContractorList', baseInfo.regularContractorList)">+</Button>
-                <Button v-else @click="handleOnRemoveOption(baseInfo.regularContractorList, index)">-</Button>
+                <Button v-if="index === 0" @click="handleOnAddOption('regularContractorList', formData.regularContractorList)">+</Button>
+                <Button v-else @click="handleOnRemoveOption(formData.regularContractorList, index)">-</Button>
               </Col>
             </Row>
           </div>
         </Card>
         <!-- 适用客户 end -->
-      </Form>
-      <!-- 基础折扣 start -->
-      <Form class="form" ref="form2" :label-width="75" label-position="left">
+        <!-- 基础折扣 statr -->
         <Card>
           <div slot="title"><span class="content-title">基础折扣</span></div>
-          <Row v-for="(item, index) in baseDiscountList" :key="`baseDiscountList${index}`">
+          <Row v-for="(item, index) in formData.baseDiscountList" :key="`baseDiscountList${index}`">
             <Col :md="7">
-              <FormItem label="应收金额：">
-                <Input
-                  v-model="item.startingAmount"
-                  @on-blur="handleCalcGoodsPrice(item)"
-                  @on-change="({target}) => handleValidateInputOnChange(target.value, item, 'startingAmountTips', 'cost')"/>
-                <div class="ivu-form-item-error-tip" v-show="item.startingAmountTips">金额格式错误</div>
+              <FormItem
+                label="应收金额："
+                :prop="`baseDiscountList[${index}].startingAmount`"
+                :rules="{required: false, validator: (r, v, cb) => validatePrice(v, item, cb), trigger: 'blur'}"
+              >
+                <Input v-model="item.startingAmount"/>
               </FormItem>
             </Col>
             <Col :md="5">
-              <FormItem label="折扣：" :label-width="50">
+              <FormItem
+                label="折扣："
+                :label-width="50"
+                :prop="`baseDiscountList[${index}].proportion`"
+                :rules="{required: false, validator: (r, v, cb) => validatePercent(v, item, cb), trigger: 'blur'}"
+              >
                 <div style="display: flex;">
-                  <Input 
-                    style="width: 90%;"
-                    v-model="item.proportion"
-                    @on-blur="handleCalcGoodsPrice(item)"
-                    @on-change="({ target }) => handleValidateInputOnChange(target.value, item, 'proportionTips', 'discount')"/>%
+                  <Input style="width: 90%;" v-model="item.proportion"/>%
                 </div>
-                <div class="ivu-form-item-error-tip" v-show="item.proportionTips">请保留2位小数</div>
               </FormItem>
             </Col>
             <Col :md="6">
-              <FormItem label="货值：" :label-width="50">
-                <Input :value="item.productAmount" style="width: 90%" disabled />
+              <FormItem label="货值：":label-width="50">
+                <Input :value="handleCalcGoodsPrice(item.startingAmount, item.proportion)" style="width: 90%" disabled />
               </FormItem>
             </Col>
-            <div>
-              <RowButton
-                :hide-add="index !== 0"
-                @on-add="handleOnAddOption('baseDiscountList', baseDiscountList)"
-                @on-remove="handleOnRemoveOption(baseDiscountList, index)"
-                @on-reset="handleOnResetOption(baseDiscountList, index, 'baseDiscountList')">
-              </RowButton>
-            </div>
+            <Col :md="6">
+              <FormItem :label-width="0">
+                <RowButton
+                  :hide-add="!!index"
+                  @on-add="handleOnAddOption('baseDiscountList', formData.baseDiscountList)"
+                  @on-remove="handleOnRemoveOption(formData.baseDiscountList, index)"
+                  @on-reset="handleOnResetOption(formData.baseDiscountList, index, 'baseDiscountList')">
+                </RowButton>
+              </FormItem>
+            </Col>
           </Row>
         </Card>
-      </Form>
-      <!-- 基础折扣 end -->
-      <!-- 单品折扣 start -->
-      <Form class="form" ref="form3" :label-width="75" label-position="left">
+        <!-- 基础折扣 end -->
+        <!-- 单品折扣 start -->
         <Card>
           <div slot="title"><span class="content-title">单品折扣</span></div>
-          <Row v-for="(item, index) in productDiscountList" :key="`productDiscountList${index}`">
+          <Row v-for="(item, index) in formData.productDiscountList" :key="`productDiscountList${index}`">
             <Col :md="7">
-              <FormItem label="选择产品：">
+              <FormItem
+                label="选择产品："
+                :prop="`productDiscountList[${index}].objectId`"
+                :rules="{required: false, validator: (r, v, cb) => validateSelect(v, item, cb), trigger: 'change'}">
                 <Select
                   v-model="item.objectId"
                   filterable
@@ -154,64 +155,88 @@
                 </Select>
               </FormItem>
             </Col>
-            <Col :md="5">
-              <FormItem :label-width="0">
-                <div style="display: flex; margin-top: 2px;">
-                  <Select class="small-select" v-model="item.objectName" @on-change="option => handleTypeSelectOnChange('productDiscount' ,option, item)">
-                    <Option v-for="tOption in discountTypeOptions" :value="tOption.value" :label="tOption.label" :key="`discountTypeOptions${tOption.value}`"></Option>
-                  </Select>
-                  <template v-if="item.objectName === 'discount'">
-                    <Input v-model="item.proportion" @on-change="({ target }) => handleValidateInputOnChange(target.value, item, 'directPriceTips', 'discount')" />%
-                  </template>
-                  <template v-else>
-                   <Input v-model="item.directPrice" :disabled="!item.objectName" @on-change="({ target }) => handleValidateInputOnChange(target.value, item, 'directPriceTips', 'cost')" />
-                  </template>
-                </div>
-                <div style="margin-left: 65px;" class="ivu-form-item-error-tip" v-show="item.directPriceTips">{{ `请保留${item.objectName === 'discount' ? 2 : 4}小数` }}</div>
+            <Col :md="2">
+              <FormItem
+                :label-width="0"
+                :prop="`productDiscountList[${index}].objectName`"
+                :rules="{required: false, validator: (r, v, cb) => validateSelect(v, item, cb), trigger: 'change'}"
+              >
+                <Select
+                  class="small-select"
+                  v-model="item.objectName"
+                  @on-change="option => handleTypeSelectOnChange('productDiscount' ,option, item)"
+                >
+                  <Option v-for="tOption in discountTypeOptions" :value="tOption.value" :label="tOption.label" :key="`discountTypeOptions${tOption.value}`"></Option>
+                </Select>
               </FormItem>
             </Col>
-            <div>
-              <RowButton
-                :hide-add="index !== 0"
-                @on-add="handleOnAddOption('productDiscountList', productDiscountList)"
-                @on-remove="handleOnRemoveOption(productDiscountList, index)"
-                @on-reset="handleOnResetOption(productDiscountList, index, 'productDiscountList')">
-              </RowButton>
-            </div>
+            <Col :md="3">
+              <FormItem
+                v-if="item.objectName === 'discount'"
+                :label-width="0"
+                :prop="`productDiscountList[${index}].proportion`"
+                :rules="{required: false, validator: (r, v, cb) => validatePercent(v, item, cb), trigger: 'blur'}"
+                :key="`productDiscountList${index}.proportion`"
+              >
+                <Input style="width: 85%;" v-model="item.proportion" />%
+              </FormItem>
+              <FormItem
+                v-else
+                :label-width="0"
+                :prop="`productDiscountList[${index}].directPrice`"
+                :rules="{required: false, validator: (r, v, cb) => validatePrice(v, item, cb), trigger: 'blur'}"
+                :key="`productDiscountList${index}.directPrice`"
+              >
+                <Input style="width: 85%;" v-model="item.directPrice" :disabled="!item.objectName" />
+              </FormItem>
+            </Col>
+            <Col :md="6">
+              <FormItem :label-width="0">
+                <RowButton
+                  :hide-add="!!index"
+                  @on-add="handleOnAddOption('productDiscountList', formData.productDiscountList)"
+                  @on-remove="handleOnRemoveOption(formData.productDiscountList, index)"
+                  @on-reset="handleOnResetOption(formData.productDiscountList, index, 'productDiscountList')">
+                </RowButton>
+              </FormItem>
+            </Col>
           </Row>
         </Card>
-      </Form>
-      <!-- 单品折扣 end -->
-      <!-- 配赠活动 start -->
-      <Form class="form" ref="form4" :label-width="75" label-position="left">
+        <!-- 单品折扣 end -->
+        <!-- 配赠活动 start -->
         <Card class="gift">
           <div slot="title"><span class="content-title">配赠活动</span></div>
-          <Row class="gift-row" v-for="(item, index) in matchingDiscountList" :key="`matchingDiscountList${index}`">
+          <Row class="gift-row" v-for="(item, index) in formData.matchingDiscountList" :key="`matchingDiscountList${index}`">
             <Col class="gift-box" span="22">
               <Row> 
                 <Col :md="9">
-                  <FormItem label="配赠应收金额：" :label-width="100">
-                    <Input 
-                      v-model="item.startingAmount"
-                      @on-change="({target}) => handleValidateInputOnChange(target.value, item, 'startingAmountTips', 'cost')"/>
-                    <div class="ivu-form-item-error-tip" v-show="item.startingAmountTips">金额格式错误</div>
+                  <FormItem
+                    label="配赠应收金额："
+                    :label-width="100"
+                    :prop="`matchingDiscountList[${index}].startingAmount`"
+                    :rules="{required: false, validator: (r, v, cb) => validateMatchingDiscount('cost', v, item, cb), trigger: 'blur'}"
+                  >
+                    <Input v-model="item.startingAmount"/>
                   </FormItem>
                 </Col>
               </Row>
               <div class="gift-content" v-for="(detail, dIndex) in item.detailList" :key="`${index}matchingActivityListDetailList${dIndex}`">
                 <Row class="gift-sub-content">
-                  <FormItem label="配赠比例：">
-                    <Input 
-                      v-model="detail.matchingMolecule"
-                      style="width: 70px;"
-                      @on-change="({target}) => handleValidateInputOnChange(target.value, detail, 'matchingMoleculeTips', 'int')"/> 比 
-                    <Input
-                      v-model="detail.matchingDenominator"
-                      style="width: 70px;"
-                      @on-change="({target}) => handleValidateInputOnChange(target.value, detail, 'matchingDenominatorTips', 'int')"/> 赠
-                    <div class="ivu-form-item-error-tip" v-show="detail.matchingMoleculeTips">请填写整数</div>
-                    <div style="margin-left: 95px;" class="ivu-form-item-error-tip" v-show="detail.matchingDenominatorTips">请填写整数</div>
+                  <p style="padding-top: 8px; flex-shrink: 0;">配赠比例：</p>
+                  <FormItem
+                    :label-width="0"
+                    :prop="`matchingDiscountList[${index}].detailList[${dIndex}].matchingMolecule`"
+                    :rules="{required: false, validator: (r, v, cb) => validateMatchingDiscount('number', v, item, cb), trigger: 'blur'}"
+                  >
+                    <Input v-model="detail.matchingMolecule" style="width: 70px;"/> 比 
                   </FormItem>
+                  <FormItem
+                    :label-width="0"
+                    :prop="`matchingDiscountList[${index}].detailList[${dIndex}].matchingDenominator`"
+                    :rules="{required: false, validator: (r, v, cb) => validateMatchingDiscount('number', v, item, cb), trigger: 'blur'}"
+                  >
+                    <Input v-model="detail.matchingDenominator" style="width: 70px;"/> 赠 
+                  </FormItem> 
                   <div class="sub-content-btn">
                     <Button v-if="dIndex === 0" @click="handleOnAddOption('matchingDetailList', item.detailList)">+</Button>
                     <Button v-else @click="handleOnRemoveOption(item.detailList, dIndex)">-</Button>
@@ -219,8 +244,13 @@
                 </Row>
                 <Row v-for="(product, pIndex) in detail.productList" :key="`${index}${dIndex}matchingActivityListDetailListProductList${pIndex}`">
                   <Col :md="9">
-                    <FormItem label="购买产品：">
-                      <div style="display: flex;">
+                    <div style="display: flex;">
+                      <p style="padding-top: 8px; flex-shrink: 0;">购买产品：</p>
+                      <FormItem
+                        :label-width="0"
+                        :prop="`matchingDiscountList[${index}].detailList[${dIndex}].productList[${pIndex}].conditionType`"
+                        :rules="{required: false, validator: (r, v, cb) => validateMatchingDiscount('select', v, item, cb), trigger: 'change'}"
+                      >
                         <Select v-model="product.conditionType" class="small-select">
                           <Option
                             v-for="(tOption, tIndex) in productTypeOptions"
@@ -229,21 +259,32 @@
                             :key="`productTypeOptions${tIndex}`">
                           </Option>
                         </Select>
+                      </FormItem>
+                      <FormItem
+                        :label-width="0"
+                        :prop="`matchingDiscountList[${index}].detailList[${dIndex}].productList[${pIndex}].conditionId`"
+                        :rules="{required: false, validator: (r, v, cb) => validateMatchingDiscount('select', v, item, cb), trigger: 'change'}"
+                      >
                         <Select
                           v-model="product.conditionId"
                           filterable
                           label-in-value
                           :loading="remoteLoading"
                           :remote-method="remoteProductDeb"
-                          @on-change="(data) => handleMidlleLabelSelectOnChange(data, product, 'conditionName', 'productOptions')">
+                          @on-change="(data) => data && handleSelectOnChangeHasLabel(product, 'conditionName', data.label, data.value, 'productOptions')">
                           <Option v-for="bpOption in productOptions" :value="bpOption.id" :label="bpOption.name" :key="`buyProductOptions${bpOption.id}`"></Option>
                         </Select>
-                      </div>
-                    </FormItem>
+                      </FormItem>
+                    </div>
                   </Col>
                   <Col :md="9">
-                    <FormItem label="可配赠产品：" :label-width="85">
-                      <div style="display: flex;">
+                    <div style="display: flex;">
+                      <p style="padding-top: 8px; flex-shrink: 0;">可配赠产品：</p>
+                      <FormItem
+                        :label-width="0"
+                        :prop="`matchingDiscountList[${index}].detailList[${dIndex}].productList[${pIndex}].objectName`"
+                        :rules="{required: false, validator: (r, v, cb) => validateMatchingDiscount('select', v, item, cb), trigger: 'change'}"
+                      >
                         <Select v-model="product.objectName" class="small-select">
                           <Option
                             v-for="(gtOption, gtIndex) in productTypeOptions"
@@ -252,53 +293,68 @@
                             :key="`productTypeOptions${gtIndex}`">
                           </Option>
                         </Select>
+                      </FormItem>
+                      <FormItem
+                        :label-width="0"
+                        :prop="`matchingDiscountList[${index}].detailList[${dIndex}].productList[${pIndex}].objectId`"
+                        :rules="{required: false, validator: (r, v, cb) => validateMatchingDiscount('select', v, item, cb), trigger: 'change'}"
+                      >
                         <Select
                           v-model="product.objectId"
                           filterable
                           label-in-value
                           :loading="remoteLoading"
                           :remote-method="remoteProductDeb"
-                          @on-change="(data) => handleMidlleLabelSelectOnChange(data, product, 'name', 'productOptions')">
+                          @on-change="(data) => data && handleSelectOnChangeHasLabel(product, 'name', data.label, data.value, 'productOptions')">
                           <Option v-for="gpOption in productOptions" :value="gpOption.id" :label="gpOption.name" :key="`giftProductOptions${gpOption.id}`"></Option>
                         </Select>
-                      </div>
+                      </FormItem>
+                    </div>
+                  </Col>
+                  <Col :md="6">
+                    <FormItem :label-width="0">
+                      <RowButton
+                        :hide-add="!!pIndex"
+                        @on-add="handleOnAddOption('matchingProductList', detail.productList)"
+                        @on-remove="handleOnRemoveOption(detail.productList, pIndex)"
+                        @on-reset="handleOnResetOption(detail.productList, pIndex, 'matchingProductList')">
+                      </RowButton>
                     </FormItem>
                   </Col>
-                  <RowButton
-                    :hide-add="pIndex !== 0"
-                    @on-add="handleOnAddOption('matchingProductList', detail.productList)"
-                    @on-remove="handleOnRemoveOption(detail.productList, pIndex)"
-                    @on-reset="handleOnResetOption(detail.productList, pIndex, 'matchingProductList')">
-                  </RowButton>
                 </Row>
               </div>
             </Col>
-            <Button v-if="index === 0" @click="handleOnAddOption('matchingDiscountList', matchingDiscountList)">+</Button>
-            <Button v-else @click="handleOnRemoveOption(matchingDiscountList, index)">-</Button>
+            <Button v-if="index === 0" @click="handleOnAddOption('matchingDiscountList', formData.matchingDiscountList)">+</Button>
+            <Button v-else @click="handleOnRemoveOption(formData.matchingDiscountList, index)">-</Button>
           </Row>
         </Card>
-      </Form>
-      <!-- 配赠活动 end -->
-      <!-- 满赠活动 start -->
-      <Form class="form" ref="form5" :label-width="75" label-position="left">
+        <!-- 配赠活动 end -->
+        <!-- 满赠活动 start -->
         <Card class="gift">
           <div slot="title"><span class="content-title">满赠活动</span></div>
-          <Row class="gift-row" v-for="(item, index) in giftDiscountList" :key="`giftDiscountList${index}`">
+          <Row class="gift-row" v-for="(item, index) in formData.giftDiscountList" :key="`giftDiscountList${index}`">
             <Col class="gift-box" span="22">
               <Row>
                 <Col :md="9">
-                  <FormItem label="满赠应收金额：" :label-width="100">
-                    <Input 
-                      v-model="item.startingAmount"
-                      @on-change="({target}) => handleValidateInputOnChange(target.value, item, 'startingAmountTips', 'cost')"/>
-                    <div class="ivu-form-item-error-tip" v-show="item.startingAmountTips">金额格式错误</div>
+                  <FormItem
+                    label="满赠应收金额："
+                    :label-width="100"
+                    :prop="`giftDiscountList[${index}].startingAmount`"
+                    :rules="{required: false, validator: (r, v, cb) => validateGiftDiscount('cost', v, item, cb), trigger: 'blur'}"
+                  >
+                    <Input v-model="item.startingAmount"/>
                   </FormItem>
                 </Col>
               </Row>
               <Row v-for="(gift, pIndex) in item.detailList" :key="`${index}detailList${pIndex}`">
                 <Col :md="9">
-                  <FormItem label="选择赠品：">
-                    <div style="display: flex;">
+                  <div style="display: flex;">
+                    <p style="padding-top: 8px; flex-shrink: 0;">选择赠品：</p>
+                    <FormItem
+                      :label-width="0"
+                      :prop="`giftDiscountList[${index}].detailList[${pIndex}].objectName`"
+                      :rules="{required: false, validator: (r, v, cb) => validateGiftDiscount('select', v, item, cb), trigger: 'change'}"
+                    >
                       <Select v-model="gift.objectName" style="width: 80px; margin-right: 5px;">
                         <Option
                           v-for="(tOption, tIndex) in productTypeOptions"
@@ -307,6 +363,12 @@
                           :key="`productTypeOptions${tIndex}`">
                         </Option>
                       </Select>
+                    </FormItem>
+                    <FormItem
+                      :label-width="0"
+                      :prop="`giftDiscountList[${index}].detailList[${pIndex}].objectId`"
+                      :rules="{required: false, validator: (r, v, cb) => validateGiftDiscount('select', v, item, cb), trigger: 'change'}"
+                    >
                       <Select
                         v-model="gift.objectId"
                         filterable
@@ -315,32 +377,48 @@
                         @on-change="(value) => handleSelectOnChange(value, 'productOptions')">
                         <Option v-for="pOption in productOptions" :value="pOption.id" :label="pOption.name" :key="`productOptions${pOption.id}`"></Option>
                       </Select>
-                    </div>
-                  </FormItem>
+                    </FormItem>
+                  </div>
                 </Col>
                 <Col :md="9">
-                  <FormItem label="可赠数量：">
-                    <Input
-                      v-model="gift.number"
-                      style="width: 100px;"
-                      @on-change="({target}) => handleValidateInputOnChange(target.value, gift, 'numberTips', 'int')"/>
-                    <div class="ivu-form-item-error-tip" v-show="gift.numberTips">请填写整数</div>
+                  <FormItem
+                    label="可赠数量："
+                    :prop="`giftDiscountList[${index}].detailList[${pIndex}].number`"
+                    :rules="{required: false, validator: (r, v, cb) => validateGiftDiscount('number', v, item, cb), trigger: 'blur'}"
+                  >
+                    <Input v-model="gift.number" style="width: 100px;"/>
                   </FormItem>
                 </Col>
-                <RowButton
-                  :hide-add="pIndex !== 0"
-                  @on-add="handleOnAddOption('giftDetailList', item.detailList)"
-                  @on-remove="handleOnRemoveOption(item.detailList, pIndex)"
-                  @on-reset="handleOnResetOption(item.detailList, pIndex, 'giftDetailList')">
-                </RowButton>
+                <Col :md="6">
+                  <FormItem :label-width="0">
+                    <RowButton
+                      :hide-add="!!pIndex"
+                      @on-add="handleOnAddOption('giftDetailList', item.detailList)"
+                      @on-remove="handleOnRemoveOption(item.detailList, pIndex)"
+                      @on-reset="handleOnResetOption(item.detailList, pIndex, 'giftDetailList')">
+                    </RowButton>
+                  </FormItem>
+                </Col>
               </Row>
             </Col>
-            <Button v-if="index === 0" @click="handleOnAddOption('giftDiscountList', giftDiscountList)">+</Button>
-            <Button v-else @click="handleOnRemoveOption(giftDiscountList, index)">-</Button>
+            <Button v-if="index === 0" @click="handleOnAddOption('giftDiscountList', formData.giftDiscountList)">+</Button>
+            <Button v-else @click="handleOnRemoveOption(formData.giftDiscountList, index)">-</Button>
           </Row>
         </Card>
+        <!-- 满赠活动 end -->
+        <!-- 返点活动 start -->
+        <Card>
+          <div slot="title"><span class="content-title">返点活动</span></div>
+          <Row>
+            <Col :md="8">
+              <FormItem :label-width="0">
+                <Checkbox v-model="formData.isRebate">启用返点</Checkbox>
+              </FormItem>
+            </Col>
+          </Row>
+        </Card>
+        <!-- 返点活动 end -->
       </Form>
-      <!-- 满赠活动 end -->
 
       <Spin v-if="spinShow" fix></Spin>
     </Card>
@@ -348,57 +426,63 @@
 </template>
 
 <script>
-import { merchantType, discountTypeOptions, productTypeOptions, formatMerchantType, initSingleData, calcGoodsPrice, taxationValidator, validateOtherForm, removeRepeatItem } from '@/utils/policy'
-import RowButton from '@/components/policy/row-button.vue'
+import { deepflatToObject, removeRepeatItem, formatMerchantType, merchantTypeOptions } from '@/utils/common.js';
+import { discountTypeOptions, productTypeOptions, initSingleData, taxationValidator  } from '@/utils/policy.js';
+import RowButton from '@/components/policy/row-button.vue';
+const validatorMapKey = {
+  // 校验器映射表
+  number: (val, cb) => !/^\d+$/.test(val) ? cb('请输入整数') : cb(),
+  cost: (val, cb) => !/^(([1-9]\d*)|0)(\.\d{1,4})?$/.test(val) ? cb('请输入有效金额') : cb(),
+  discount: (val, cb) => !/^(([1-9]\d*)|0)(\.\d{1,2})?$/.test(val) ? cb('请输入有效折扣') : cb(),
+}
+
 export default {
-  name: 'policy-add',
+  name: 'policy-edit',
   components: { RowButton },
   data() {
     return {
       id: '',
-      merchantType,
+      merchantTypeOptions,
       productTypeOptions,
       discountTypeOptions,
       spinShow: false,
       submitBtnLoading: false, // 提交按钮Loading
       draftBtnLoading: false, // 草稿按钮Loading
 
-      baseInfo: { // 基础信息/适用客户
+      formData: { // 基础信息/适用客户
         policyName: '',
         deadlineAt: '', // 有效截止日期
         taxDeduction: 0,
         regularType: '', // 适用客户-单选按钮
         assignMerchantType: '', // 指定客户类型-类型
-        regularContractorList: [{contractorId: '', merchantType: ''}] // 指定客户-公司名称
+        regularContractorList: [{contractorId: '', merchantType: ''}], // 指定客户-公司名称
+        
+        isRebate: false, // 是否启用返点清单
+        baseDiscountList: [{ startingAmount: '', proportion: '' }], // 基础折扣
+        productDiscountList: [{ objectId: '', objectName: '', directPrice: '', }],
+        matchingDiscountList: [ // 配赠活动
+          {
+            startingAmount: '',
+            detailList: [
+              {
+                matchingMolecule: '',
+                matchingDenominator: '',
+                productList: [ {  objectId: '',  objectName: '',  conditionId: '',  conditionType: '',  } ] // 产品
+              }
+            ]
+          }
+        ],
+        giftDiscountList: [ // 满赠活动
+          {
+            startingAmount: '',
+            detailList: [ { objectName: '', objectId: '', number: '',} ] // 产品
+          }
+        ]
       },
-      baseDiscountList: [ // 基础折扣
-        { startingAmount: '', proportion: '', productAmount: '', }
-      ], 
-      productDiscountList: [ // 单品折扣
-        { objectId: '', objectName: '', directPrice: '', }
-      ],
-      matchingDiscountList: [ // 配赠活动
-        {
-          startingAmount: '',
-          detailList: [
-            {
-              matchingMolecule: '',
-              matchingDenominator: '',
-              productList: [ {  objectId: '',  objectName: '',  conditionId: '',  conditionType: '',  } ] // 产品
-            }
-          ]
-        }
-      ],
-      giftDiscountList: [ // 满赠活动
-        {
-          startingAmount: '',
-          detailList: [ { objectName: '', objectId: '', number: '',} ] // 产品
-        }
-      ],
       baseInfoRules: {
         'policyName': [{ required: true, message: '该选项不能为空', trigger: 'blur' }],
+        'taxDeduction': [{ required: false, validator: taxationValidator, trigger: 'blur' }],
         'deadlineAt': [{ required: true, type: 'date', message: '该选项不能为空', trigger: 'change' }],
-        'taxDeduction': [{ required: false, validator: taxationValidator, trigger: 'change' }],
         'regularType': [{ required: true, message: '请选择适用客户', trigger: 'change' }],
       },
       remoteLoading: false, // 远程搜索
@@ -416,32 +500,26 @@ export default {
     async getDetail(id) {
       this.spinShow = true;
       try {
-        let res = await this.$api.v2GetContractPolicyDetail({id});
-        if (res.code === 0) {
-          let formData = {}, data = res.data;
+        let { code, data } = await this.$api.getContractPolicyDetailV2({id});
+        if (code === 0) {
+          data.isRebate = !!+data.isRebate;
           ['baseDiscountList', 'productDiscountList', 'matchingDiscountList', 'giftDiscountList']
-            .forEach(key => formData[key] = data[key].length ? data[key] : [ initSingleData[key]() ]); // 设置页面初始值
+            .forEach(key => !data[key].length && (data[key] = [initSingleData[key]()]));  // 设置页面初始值
+          data.regularContractorList.forEach(item => (item.selected = true) && (item.merchantType = formatMerchantType(item.merchantType)));
 
-          let { baseDiscountList, productDiscountList, matchingDiscountList, giftDiscountList, selectedProductList, ...baseInfo } = data;
-          formData.baseInfo = baseInfo;
+          const companyOptions = JSON.parse(JSON.stringify(data.regularContractorList)); // 选中的公司信息
+          const { selectedProductList, ...formData } = data;
           selectedProductList.forEach(item => item.selected = true);
-          baseInfo.regularContractorList.forEach(item => (item.selected = true) && (item.merchantType = formatMerchantType(item.merchantType)));
-          const companyOptions = JSON.parse(JSON.stringify(baseInfo.regularContractorList)); // 选中的公司信息
-          !baseInfo.regularContractorList.length && (baseInfo.regularContractorList = [ initSingleData['regularContractorList']() ]); // 设置页面初始值
-          
-          ['baseInfo', 'baseDiscountList', 'productDiscountList', 'matchingDiscountList', 'giftDiscountList']
-            .forEach(key => this[key] = formData[key]); // 赋值
-          
+          !data.regularContractorList.length && (data.regularContractorList = [initSingleData['regularContractorList']()]); // 设置页面初始值
+         
+          this.formData = data;
           this.$nextTick(() => {
             this.productOptions = selectedProductList;
             this.companyOptions = companyOptions;
           })
-
           this.spinShow = false;
         }
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     },
 
     /**
@@ -451,20 +529,17 @@ export default {
     async getDraftDeatil(id) {
       this.spinShow = true;
       try {
-        let res = await this.$api.v2GetContractPolicyDraftDetail({id});
-        if (res.code === 0) {
-          let { id, content } = res.data;
+        let { code, data } = await this.$api.getContractPolicyDraftDetailV2({id});
+        if (code === 0) {
+          let { id, content } = data;
           content = JSON.parse(content);
-          content.baseInfo.id = id;
-          ['baseInfo', 'baseDiscountList', 'productDiscountList', 'matchingDiscountList', 'giftDiscountList']
-            .forEach(key => this[key] = content[key]);
+          content.formData.id = id;
+          this.formData = content.formData;
           
           this.$nextTick(() => ['companyOptions', 'productOptions'].forEach(key => this[key] = content[key]));
           this.spinShow = false;
         }
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     },
 
     /**
@@ -495,7 +570,7 @@ export default {
       try {
         let res = await this.$api.getProductData({name});
         if (res.code ===0) {
-          this.productOptions = removeRepeatItem([ ...this.productOptions, ...res.data]);
+          this.productOptions = removeRepeatItem([ ...this.productOptions, ...res.data], 'id');
           this.remoteLoading = false;
         }
       } catch (error) {
@@ -600,18 +675,6 @@ export default {
     },
 
     /**
-     * 配赠活动产品 - 选择器中间处理
-     * @param {Object} data: 当前选中数据
-     * @param {Object} curentData:  当前数据
-     * @param {String} prop: 需要在当前对象追加的属性名
-     * @param {String} optionsKey: 选项列表属性名称
-     */
-    handleMidlleLabelSelectOnChange(data, currentData, prop, optionsKey) {
-      if (!data) return false;
-      this.handleSelectOnChangeHasLabel(currentData, prop, data.label, data.value, optionsKey);
-    },
-
-    /**
      * 类型选择器变化
      */
     handleTypeSelectOnChange(type, option, data) {
@@ -633,7 +696,7 @@ export default {
     handleRadioOnChange(option) {
       this.$nextTick(() => {
         if (option === 'contractor') {
-          this.baseInfo.assignMerchantType = '';
+          this.formData.assignMerchantType = '';
           this.$refs.form1.validateField('assignMerchantType');
         }
       })
@@ -641,27 +704,13 @@ export default {
 
     /**
      * 基础折扣 - 货值计算
-     * @param {Object} currentData: 当前行数据
+     * @param {String} startingAmount: 应收金额
+     * @param {String} proportion: 折扣
      */
-    handleCalcGoodsPrice(currentData) {
-      const { startingAmount, proportion } = currentData;
-      currentData.productAmount = (startingAmount !== null && proportion !== null) ? calcGoodsPrice(+startingAmount, proportion) : '';
-    },
-
-    /**
-     * 金额/折扣/整数 输入框内容校验
-     * @param {String|Number} value: 当前值
-     * @param {Object} currentData: 当前行数据
-     * @param {String} key: 显示提示语属性
-     * @param {String} type: 校验类型 int -> 整数， cost -> 金额， discount -> 折扣
-     */
-    handleValidateInputOnChange(value, currentData, key, type) {
-      if (!value) return currentData[key] = false;
-      let res = false;
-      const reg = type === 'cost' ? (/^(([1-9]\d*)|0)(\.\d{1,4})?$/) :
-                    type === 'discount' ? (/^(([1-9]\d*)|0)(\.\d{1,2})?$/) : (/^\d*$/);
-      res = !reg.test(value);
-      currentData[key] = res;
+    handleCalcGoodsPrice(startingAmount, proportion) {
+      if ((!startingAmount && !proportion) || (proportion && proportion > 100)) return '';
+      if (+proportion === 0) return startingAmount;
+      return this.$toFixed(startingAmount * (proportion / 1000), 4);
     },
 
     /**
@@ -700,30 +749,22 @@ export default {
     handleSubmit() {
       this.$refs.form1.validate((valid) => {
         if (valid) {
-          const otherFormArr = [
-            { errMsg: '请填写完整基础折扣', data: this.baseDiscountList },
-            { errMsg: '请填写完整单品折扣', data: this.productDiscountList },
-            { errMsg: '请填写完整配赠活动', data: this.matchingDiscountList },
-            { errMsg: '请填写完整满赠活动', data: this.giftDiscountList }
-          ]
-          validateOtherForm(otherFormArr)
-            .then(({validRes, msg}) => {
-              if (!validRes) return this.$Message.warning(msg);
-              let baseDiscountList = this.baseDiscountList.filter(item => item.productAmount),
-                productDiscountList = this.productDiscountList.filter(item => item.objectId),
-                giftDiscountList = this.giftDiscountList.filter(item => item.startingAmount),
-                matchingDiscountList = this.matchingDiscountList.filter(item => item.startingAmount),
-                params = { ...this.baseInfo, baseDiscountList, productDiscountList, giftDiscountList, matchingDiscountList, };
-              params = JSON.parse(JSON.stringify(params));
-              // 数据结构转换
-              params.deadlineAt = new Date(params.deadlineAt).getTime() / 1000;
-              params.regularType === 'contractor' && (params.regularContractorIdList = params.regularContractorList.map(item => item.contractorId));
-              delete params.regularContractorList;
-              delete params.status;
-              delete params.enableStatus;
+          let params = JSON.parse(JSON.stringify(this.formData));
+          // 过滤空白选项
+          ['baseDiscountList', 'matchingDiscountList', 'giftDiscountList']
+            .forEach(key => params[key] = params[key].filter(item => item.startingAmount));
+          params.productDiscountList = params.productDiscountList.filter(item => item.objectId);
 
-              this.submit(this.id ? 'edit' : 'add').init(params);
-            })
+          params.isRebate = +params.isRebate;
+          params.deadlineAt = new Date(params.deadlineAt).getTime() / 1000;
+          params.regularType === 'contractor' && (params.regularContractorIdList = params.regularContractorList.map(item => item.contractorId));
+          delete params.status;
+          delete params.enableStatus;
+          delete params.regularContractorList;
+
+          this.submit(this.id ? 'edit' : 'add').init(params);
+        } else {
+          this.$Message.warning('请填写完整表单!');
         }
       })
     },
@@ -734,15 +775,72 @@ export default {
     handleDraft() {
       let content = {},
         id = this.id,
-        policyName = this.baseInfo.policyName;
+        policyName = this.formData.policyName;
       if (!policyName) return this.$Message.warning('政策名称不能为空!');
 
-      ['baseInfo', 'baseDiscountList', 'productDiscountList', 'matchingDiscountList', 'giftDiscountList', 'companyOptions', 'productOptions']
-        .forEach(key => content[key] = this[key]);
+      ['formData', 'companyOptions', 'productOptions'].forEach(key => content[key] = this[key]);
 
       const params = { id, policyName, content: JSON.stringify(content) };
       this.saveDraft(params);
     },
+
+    /**
+     * 校验配赠活动
+     * @param {String} type: 校验框类型
+     * @param {*} value: 当前值
+     * @param {Object} currentData: 当前行数据
+     * @param {Function} callback: 回调
+     */
+    validateMatchingDiscount(type, value, currentData, callback) {
+      const obj = deepflatToObject(currentData.detailList); // 扁平detailList数组
+      const arr = [ ...new Set([...Object.values(obj), currentData.startingAmount]) ];
+
+      if (arr.every(item => !item)) return callback(); // 全空
+      if (validatorMapKey[type]) return validatorMapKey[type](value, callback);
+      !value ? callback('请选择') : callback();
+    },
+
+    /**
+     * 校验满赠活动
+     * @param {String} type: 校验框类型
+     * @param {*} value: 当前值
+     * @param {Object} currentData: 当前行数据
+     * @param {Function} callback: 回调
+     */
+    validateGiftDiscount(type, value, currentData, callback) {
+      const obj = deepflatToObject(currentData.detailList); // 扁平detailList数组
+      const arr = [ ...new Set([...Object.values(obj), currentData.startingAmount]) ];
+
+      if (arr.every(item => !item)) return callback();
+      if (validatorMapKey[type]) return validatorMapKey[type](value, callback);
+      !value ? callback('请选择') : callback();
+    },
+
+    // 校验金额
+    validatePrice(value, currentData, callback) {
+      const arr = Object.values(currentData);
+
+      if (arr.every(item => !item)) return callback(); // 全为空时
+      validatorMapKey.cost(value, callback);
+    },
+
+    // 校验折扣/税率 
+    validatePercent(value, currentData, callback) {
+      const arr = Object.values(currentData);
+
+      if (arr.every(item => !item)) return callback();
+      if (value > 100) return callback('请输入有效折扣');
+      validatorMapKey.discount(value, callback);
+    },
+
+    // 校验选项
+    validateSelect(value, currentData, callback) {
+     const arr = Object.values(currentData);
+
+      if (arr.every(item => !item)) return callback();
+      !value ? callback('请选择') : callback();
+    }
+
   },
   mounted() {
     const { id, enableStatus } = this.$route.query;
@@ -793,6 +891,10 @@ export default {
   .gift {
     /deep/ .ivu-card-body {
       padding-left: 11px;
+    }
+    .small-select {
+      width: 85px;
+      margin-right: 5px;
     }
     .gift-row {
       margin-bottom: 16px;

@@ -17,7 +17,7 @@
                         </Select>
                     </FormItem>
                     <FormItem>
-                        <Input v-model="search.policy_name" placeholder="政策名称" clearable @keydown.native.enter.prevent="getList('search')"></Input>
+                        <Input v-model="search.policyName" placeholder="政策名称" clearable @keydown.native.enter.prevent="getList('search')"></Input>
                     </FormItem>
                     <FormItem>
                         <Select v-model="search.enableStatus" placeholder="政策状态" @on-change="getList('search')">
@@ -40,7 +40,7 @@
                         <Button type="primary" v-permission="'/v2/contract-policy/create'">添加</Button>
                     </router-link>
                     <Button type="primary" :loading="auditBtnLoading" @click="handleClickButton('audit')" v-permission="'/v2/contract-policy/audit'">审核</Button>
-                    <Button type="primary" @click="handleClickButton('disOrEnable')" v-permission="'/v2/contract-policy/start-using'">启用/禁用</Button>
+                    <Button type="primary" @click="handleClickButton('disOrEnable')" v-permission="'/v2/contract-policy/enable-status'">启用/停用</Button>
                     <Progress v-show="isShowProgress" :percent="percentProgress"></Progress>
                 </Col>
             </Row>
@@ -83,27 +83,18 @@
         </Modal>
 
         <!-- 审核 -->
-        <PolicyAuditModal
-          :data="policyModalObj.data"
-          :show="policyModalObj.show"
-          :title="policyModalObj.title"
-          :hide-auditer="policyModalObj.hideAuditer"
-          :spin-loading="policyModalObj.spinLoading"
-          @on-ok="handleOnOkAuditPolicy"
-          @on-cancel="handleOnCancelAuditPolicy"
-          @on-show-detail="handleOnShowSuitGoodsDetail">
-        </PolicyAuditModal>
+        <PolicyDetailModal ref="policyDetailModal" @on-success="getList"></PolicyDetailModal>
     </div>
 </template>
 
 <script>
 import globalMixin from '~/plugins/mixin'
-import PolicyAuditModal from '@/components/policy/policy-audit-modal.vue'
+import PolicyDetailModal from '@/components/policy/policy-detail-modal.vue'
 import { formatPolicyStatus, formatAuditStatus } from '@/utils/policy'
 export default {
     name: 'policy',
     components: {
-      PolicyAuditModal
+      PolicyDetailModal
     },
     mixins: [globalMixin],
     data () {
@@ -254,19 +245,6 @@ export default {
               }
             },
             auditBtnLoading: false,
-            policyModalObj: { // 审核 / 供货政策详情模态窗 集合
-              show: false,
-              title: '审核',
-              hideAuditer: false,
-              spinLoading: false,
-              data: {
-                baseDiscountList: [],
-                giftDiscountList: [],
-                regularContractorList: [],
-                matchingDiscountList: [],
-                productDiscountList: [],
-              },
-            },
             disabledOrEnableObj: {
               modal: false,
               id: '',
@@ -306,40 +284,6 @@ export default {
             }
           } catch (error) {
             data.onLoading = false;
-          }
-        },
-
-        /**
-         * 获取政策详情
-         */
-        async getDetail(id) {
-          this.policyModalObj.spinLoading = true;
-          try {
-            let res = await this.$api.v2GetContractPolicyDetail({id})
-            if (res.code === 0) {
-              res.data.matchingDiscountList = this.flatMatchingDiscountList(res.data.matchingDiscountList);
-              this.policyModalObj.data = res.data;
-              this.policyModalObj.spinLoading = false;
-            }
-          } catch (error) {
-            
-          }
-        },
-
-        /**
-         * 审核
-         */
-        async auditPolicy(params) {
-          this.auditBtnLoading = true;
-          try {
-            let res = await this.$api.v2AuditContractPolicy(params);
-            if (res.code === 0) {
-              this.$Message.success('审核成功!');
-              this.auditBtnLoading = false;
-              this.getList();
-            }
-          } catch (error) {
-            this.auditBtnLoading = false;
           }
         },
 
@@ -451,55 +395,11 @@ export default {
          * @param {String} id: 数据id
          */
         handleShowPolicyModal(type, id) {
-          this.getDetail(id);
-          this.policyModalObj.hideAuditer = type === 'audit' ? false : true;
-          this.policyModalObj.title = type === 'audit' ? '审核' : '供货政策详情';
-          this.policyModalObj.show = true;
-        },
+          let title = '供货政策详情';
+          let hideAuditer = true;
+          type === 'audit' && (title = '审核') && (hideAuditer = false);
 
-        /**
-         * 审核/政策详情 模态窗 - 确认事件
-         * @param {object} params: 审核模式下返回审核结果auditResult: true -> 通过  false -> 不通过
-         */
-        handleOnOkAuditPolicy({ auditResult, id }) {
-          !!id && this.auditPolicy({id, auditResult});
-          this.policyModalObj.show = false
-        },
-
-        /**
-         * 审核/政策详情 模态窗 - 关闭/取消事件
-         */
-        handleOnCancelAuditPolicy() {
-          this.policyModalObj.show = false
-        },
-
-        /**
-         * 审核/政策详情 模态窗 - 查看适用商品详情事件
-         * @param {Object} data: 当前点击的目标数据
-         */
-        handleOnShowSuitGoodsDetail(currentData) {
-          console.log(currentData, 'currentData')
-          // this.regularProductInfo = true
-        },
-
-        /**
-         * 降维配赠活动
-         * @param {Array} arr: 配增活动数组
-         */
-        flatMatchingDiscountList(arr) {
-          let newArr = JSON.parse(JSON.stringify(arr));
-          newArr.forEach(item => {
-            let tempDeatilList = [];
-            item.detailList.forEach(dItem => {
-              let obj = dItem.productList.splice(0, 1)[0];
-              obj.matchingDenominator = dItem.matchingDenominator;
-              obj.matchingMolecule = dItem.matchingMolecule;
-              obj.firstFlag = true; // 首个数据标识
-              tempDeatilList = [ ...tempDeatilList, obj, ...dItem.productList ];
-            })
-            item.detailList = tempDeatilList;
-          });
-          return newArr;
+          this.$refs.policyDetailModal.initModal({ id, title, hideAuditer });
         },
 
         closeModal (e) {

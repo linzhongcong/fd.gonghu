@@ -17,6 +17,20 @@ export const initData = {
       boxStandard: '',
     }
   },
+  backPointProductList() { // 返点清单
+    return {
+      id: '',
+      barcode: '',
+      standard: '',
+      unit: '',
+      price: '',
+      discount: '',
+      number: 1,
+      productAmount: '',
+      totalPrice: '',
+      boxStandard: '',
+    }
+  },
 }
 
 /**
@@ -97,7 +111,7 @@ export function formatPaymentMethod(method) {
 export function formatStatus(status) {
   let str = '';
   switch (status) {
-    case 'OrderWorkflow/wait':
+    case 'OrderWorkflow/disposePending':
       str = '待处理';
       break;
     case 'OrderWorkflow/reject':

@@ -10,7 +10,7 @@
             <Input v-model="searchData.orderSn" placeholder="订单编号" clearable />
             <Input v-model="searchData.createdBy" placeholder="创建人" clearable />
             <Input v-model="searchData.merchantName" placeholder="商家名称" clearable />
-            <Select v-model="searchData.orderForm" placeholder="订单来源" clearable @on-change="getList('new')">
+            <Select v-model="searchData.orderFrom" placeholder="订单来源" clearable @on-change="getList('new')">
               <Option v-for="(item, index) in orderFormOptions" :value="item.value" :label="item.label" :key="`orderFormOptions${index}`"></Option>
             </Select>
             <Select v-model="searchData.status" placeholder="状态" clearable @on-change="getList('new')">
@@ -22,10 +22,10 @@
           </Col>
           <Col :md="24">
             <Button type="primary" @click="goToOrderEditPage(null)">添加</Button>
-            <Button type="primary" @click="handleShowDealModal">处理</Button>
-            <Button type="primary" @click="handleShowAuditModal('manage')">初审</Button>
-            <Button type="primary" @click="handleShowAuditModal('director')">复审</Button>
-            <Button type="primary" @click="handleShowInvalidModal">作废</Button>
+            <Button type="primary" v-permission="'/v2/order/dispose'" @click="handleShowDealModal">处理</Button>
+            <Button type="primary" v-permission="'/v2/order/manage-audit'" @click="handleShowAuditModal('manage')">初审</Button>
+            <Button type="primary" v-permission="'/v2/order/director-audit'" @click="handleShowAuditModal('director')">复审</Button>
+            <Button type="primary" v-permission="'/v2/order/invalid'" @click="handleShowInvalidModal">作废</Button>
             <Button type="primary" @click="goToReplacement">添加补发订单</Button>
             <Button type="primary" @click="handleExportData">导出数据</Button>
           </Col>
@@ -74,11 +74,9 @@
 
     <!-- 处理弹窗 start -->
     <OrderDealModal
+      ref="order-deal-modal"
       :show="dealModalObj.show"
-      :data="dealModalObj.data"
-      :remote-method="queryShippingDeb"
-      :remote-loading="dealModalObj.remoteLoading"
-      :remote-data-list="dealModalObj.remoteDataList"
+      :submitting="dealModalObj.submitting"
       @on-ok="dealOnOk"
       @on-cancel="dealModalObj.show = false">
     </OrderDealModal>
@@ -98,14 +96,7 @@
     <!-- 审核弹窗 end -->
 
     <!-- 供货政策详情 start -->
-    <PolicyAuditModal
-      hide-auditer
-      :show="policyModalObj.show"
-      :data="policyModalObj.data"
-      :spin-loading="policyModalObj.spinLoading"
-      @on-ok="() => policyModalObj.show = false"
-      @on-cancel="policyModalObj.show = false">
-    </PolicyAuditModal>
+    <PolicyDetailModal ref="policyDetailModal"></PolicyDetailModal>
     <!-- 供货政策详情 end -->
 
     <!-- 作废弹窗 start -->
@@ -136,7 +127,7 @@ import OrderDealModal from '@/components/order-management/order-deal-modal.vue';
 import OrderAuditModal from '@/components/order-management/order-audit-modal.vue';
 import OrderExportModal from '@/components/order-management/order-export-modal.vue';
 import OrderInvalidModal from '@/components/order-management/order-invalid-modal.vue';
-import PolicyAuditModal from '@/components/policy/policy-audit-modal.vue';
+import PolicyDetailModal from '@/components/policy/policy-detail-modal.vue';
 export default {
   name: 'review',
   mixins: [globalMixin],
@@ -145,7 +136,7 @@ export default {
     OrderAuditModal,
     OrderExportModal,
     OrderInvalidModal,
-    PolicyAuditModal,
+    PolicyDetailModal,
   },
   data() {
     return {
@@ -329,9 +320,7 @@ export default {
       // 处理弹窗集合
       dealModalObj: {
         show: false,
-        data: {},
-        remoteLoading: false,
-        remoteDataList: []
+        submitting: false,
       },
 
       // 审核弹窗集合
@@ -341,6 +330,7 @@ export default {
         submitting: false,
         type: 'manage',
         data: {
+          auditLog: {},
           productList: [],
           giftList: [],
         },
@@ -359,26 +349,13 @@ export default {
         submitting: false,
       },
 
-      // 政策详情弹窗集合
-      policyModalObj: {
-        show: false,
-        spinLoading: false,
-        data: {
-          baseDiscountList: [],
-          giftDiscountList: [],
-          regularContractorList: [],
-          matchingDiscountList: [],
-          productDiscountList: [],
-        },
-      },
-
       // 下拉框选项
       orderFormOptions: [
         { value: 'backstage', label: '后台' },
         { value: 'dingTalk', label: '钉钉' },
       ],
       statusOptions: [
-        { value: 'OrderWorkflow/wait', label: '待处理' },
+        { value: 'OrderWorkflow/disposePending', label: '待处理' },
         { value: 'OrderWorkflow/reject', label: '驳回' },
         { value: 'OrderWorkflow/auditPending', label: '待初审' },
         { value: 'OrderWorkflow/auditFailure', label: '初审不通过' },
@@ -388,8 +365,6 @@ export default {
         { value: 'OrderWorkflow/cancel', label: '作废' },
         { value: 'OrderWorkflow/draft', label: '草稿' },
       ],
-
-      queryShippingDeb: () => {},
     }
   },
   methods: {
@@ -428,7 +403,7 @@ export default {
     async handleDelete(id) {
       this.tableLoading = true;
       try {
-        let { code } = await this.$api.orderReviewDelete({id});
+        let { code } = await this.$api.orderReviewDeleteV2({id});
         if (code === 0) {
           this.$Message.success('删除成功!');
           this.getList();
@@ -445,16 +420,18 @@ export default {
     async getOrderDeatil(id) {
       this.auditModalObj.spin = true;
       try {
-        let { code, data } = await this.$api.orderReviewDetails({id});
+        let { code, data } = await this.$api.orderReviewDetailsV2({id});
         if (code === 0) {
-          console.log(data)
-          data.orderFromText = formatOrderFrom(data.orderFrom);
+          data.orderFrom = formatOrderFrom(data.orderFrom);
           data.paymentMethod = formatPaymentMethod(data.paymentMethod);
+          data.deliveryMode = data.deliveryMode === 'logistics' ? '物流' : '快递';
           data.giftList = [ ...data.giftProductList, ...data.matchingProductList ];
-          data.auditLog.forEach(item => {
-            item.createdAt = this.$format(item.createdAt, 'yyyy-MM-dd hh:mm');
-            item.statusText = formatStatus(item.status);
-          });
+
+          data.auditLog = data.auditLog.pop();
+          if (!!data.auditLog) {
+            data.auditLog.createdAt = this.$format(data.auditLog.createdAt, 'yyyy-MM-dd hh:mm');
+            data.auditLog.status = data.auditLog.status === 'OrderWorkflow/auditRecheckPending' ? '通过' : '不通过';
+          }
 
           this.auditModalObj.data = data;
         }
@@ -465,8 +442,17 @@ export default {
     /**
      * 确认处理
      */
-    async dealOnOk() {
-      // to-do: 处理API
+    async dealOnOk(data) {
+      this.dealModalObj.submitting = true;
+      try {
+        let { code } = await this.$api.orderReviewDispose(data);
+        if (code === 0) {
+          this.$Message.success('处理成功!');
+          this.dealModalObj.show = false;
+          this.getList();
+        }
+      } catch (error) {}
+      this.dealModalObj.submitting = false;
     },
 
     /**
@@ -518,42 +504,10 @@ export default {
         const { code, data } = await this.$api.orderExport(formData);
         if (code === 0) {
           this.exportModalObj.show = false;
-          this.$downLoad(data.url);
+          this.$download(data.url);
         }
       } catch (error) {}
       this.exportModalObj.submitting = false;
-    },
-
-    /**
-     * 获取供货政策详情
-     * @param {String} id: 政策id
-     */
-    async getPolicyDetail(id) {
-      this.policyModalObj.spinLoading = true;
-      try {
-        let { code, data } = await this.$api.v2GetContractPolicyDetail({id})
-        if (code === 0) {
-          data.matchingDiscountList = this.flatMatchingDiscountList(data.matchingDiscountList);
-          this.policyModalObj.data = data;
-        }
-      } catch (error) {}
-      this.policyModalObj.spinLoading = false;
-    },
-    // 降维配赠活动 (适用政策详情)
-    flatMatchingDiscountList(arr) {
-      let newArr = JSON.parse(JSON.stringify(arr));
-      newArr.forEach(item => {
-        let tempDeatilList = [];
-        item.detailList.forEach(dItem => {
-          let obj = dItem.productList.splice(0, 1)[0];
-          obj.matchingDenominator = dItem.matchingDenominator;
-          obj.matchingMolecule = dItem.matchingMolecule;
-          obj.firstFlag = true; // 首个数据标识
-          tempDeatilList = [ ...tempDeatilList, obj, ...dItem.productList ];
-        })
-        item.detailList = tempDeatilList;
-      });
-      return newArr;
     },
 
     /**
@@ -592,7 +546,12 @@ export default {
 
     // 弹窗 处理 
     handleShowDealModal() {
+      if (this.checkList.length !== 1) return this.$Message.warning('请选择一条数据!');
+      const { id, orderFrom } = this.checkList[0];
+      if (orderFrom === 'backstage') return this.$Message.warning('请选择钉钉数据!');
+
       this.dealModalObj.show = true;
+      this.$refs['order-deal-modal'].getDetail(id);
     },
 
     /**
@@ -600,8 +559,7 @@ export default {
      * @param {String|Number} id: 政策id
      */
     handleShowPolicy(id) {
-      this.policyModalObj.show = true;
-      this.getPolicyDetail(id);
+      this.$refs.policyDetailModal.initModal({ id });
     },
 
     // 导出数据

@@ -46,7 +46,7 @@
                     </td>
                     <td>
                       <div class="ivu-table-cell">
-                        <span>{{ data.orderFromText }}</span>
+                        <span>{{ data.orderFrom }}</span>
                       </div>
                     </td>
                     <td class="head-bg">
@@ -54,7 +54,7 @@
                     </td>
                     <td>
                       <div class="ivu-table-cell">
-                        <span>{{ data.paymentMethodText }}</span>
+                        <span>{{ data.paymentMethod }}</span>
                       </div>
                     </td>
                     <td class="head-bg">
@@ -62,7 +62,7 @@
                     </td>
                     <td>
                       <div class="ivu-table-cell">
-                        <span>{{ data.deadlineAt }}</span>
+                        <span>{{ data.deliveryMode }}</span>
                       </div>
                     </td>
                   </tr>
@@ -174,51 +174,13 @@
                 <!-- 复审 -->
                 <template v-if="type === 'director'">
                   <tbody class="ivu-table-tbody border">
-                    <template v-for="item in data.auditLog">
-                      <tr>
-                        <td class="head-bg">
-                          <div class="ivu-table-cell">{{ transformAuditLabel(item.status) }}</div>
-                        </td>
-                        <td>
-                          <div class="ivu-table-cell">
-                            <span>{{ item.createdBy }}</span>
-                          </div>
-                        </td>
-                        <td class="head-bg">
-                          <div class="ivu-table-cell">审核时间</div>
-                        </td>
-                        <td>
-                          <div class="ivu-table-cell">
-                            <span>{{ item.createdAt }}</span>
-                          </div>
-                        </td>
-                        <td class="head-bg">
-                          <div class="ivu-table-cell">审核结果</div>
-                        </td>
-                        <td>
-                          <div class="ivu-table-cell">
-                            <span>{{ item.statusText }}</span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="head-bg">
-                          <div class="ivu-table-cell">备注</div>
-                        </td>
-                        <td colspan="5">
-                          <div class="ivu-table-cell">
-                            <span>{{ item.opinion }}</span>
-                          </div>
-                        </td>
-                      </tr>
-                    </template>
                     <tr>
                       <td class="head-bg">
-                        <div class="ivu-table-cell">复审</div>
+                        <div class="ivu-table-cell">初审</div>
                       </td>
                       <td>
                         <div class="ivu-table-cell">
-                          <span>{{ data.policyName }}</span>
+                          <span>{{ data.auditLog.createdBy }}</span>
                         </div>
                       </td>
                       <td class="head-bg">
@@ -226,13 +188,33 @@
                       </td>
                       <td>
                         <div class="ivu-table-cell">
-                          <span>{{ data.policyName }}</span>
+                          <span>{{ data.auditLog.createdAt }}</span>
                         </div>
                       </td>
                       <td class="head-bg">
                         <div class="ivu-table-cell">审核结果</div>
                       </td>
                       <td>
+                        <div class="ivu-table-cell">
+                          <span>{{ data.auditLog.status }}</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="head-bg">
+                        <div class="ivu-table-cell">备注</div>
+                      </td>
+                      <td colspan="5">
+                        <div class="ivu-table-cell">
+                          <span>{{ data.auditLog.opinion }}</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="head-bg">
+                        <div class="ivu-table-cell">审核结果</div>
+                      </td>
+                      <td colspan="5">
                         <div class="ivu-table-cell">
                           <RadioGroup v-model="isPass">
                             <Radio :label="1">通过</Radio>
@@ -256,36 +238,6 @@
                 <!-- 初审 -->
                 <template v-else>
                   <tbody class="ivu-table-tbody border">
-                    <template v-for="item in data.auditLog">
-                      <tr>
-                        <td class="head-bg">
-                          <div class="ivu-table-cell">初审</div>
-                        </td>
-                        <td colspan="2">
-                          <div class="ivu-table-cell">
-                            <span>{{ item.createdBy }}</span>
-                          </div>
-                        </td>
-                        <td class="head-bg">
-                          <div class="ivu-table-cell">审核时间</div>
-                        </td>
-                        <td colspan="2">
-                          <div class="ivu-table-cell">
-                            <span>{{ item.createdAt }}</span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="head-bg">
-                          <div class="ivu-table-cell">备注</div>
-                        </td>
-                        <td colspan="5">
-                          <div class="ivu-table-cell">
-                            <span>{{ item.opinion }}</span>
-                          </div>
-                        </td>
-                      </tr>
-                    </template>
                     <tr>
                       <td class="head-bg">
                         <div class="ivu-table-cell">审核结果</div>
@@ -304,8 +256,8 @@
                       <td colspan="2">
                         <div class="ivu-table-cell">
                           <RadioGroup v-model="needDirectorAudit">
-                            <Radio :label="1">是</Radio>
-                            <Radio :label="0">否</Radio>
+                            <Radio :label="1" :disabled="disabledDirectorAudit">是</Radio>
+                            <Radio :label="0" :disabled="disabledDirectorAudit">否</Radio>
                           </RadioGroup>
                         </div>
                       </td>
@@ -323,7 +275,6 @@
                   </tbody>
                 </template>
                 <!-- 审核数据 end -->
-
               </table>
             </div>
           </div>
@@ -371,7 +322,10 @@ export default {
   },
   computed: {
     title() {
-      return this.type === 'manage' ? '初审' : '复审'
+      return this.type === 'manage' ? '初审' : '复审';
+    },
+    disabledDirectorAudit() {
+      return this.isPass ? false : (this.needDirectorAudit = null, true);
     },
   },
   data() {
@@ -416,9 +370,14 @@ export default {
       const { type, isPass, needDirectorAudit, remark } = this;
       const id = this.data.id;
       if (!this.isSelectDone()) return this.$Message.warning('请选择审核结果!');
-      type === 'manage' ?
-        this.$emit('on-ok', { id, type, isPass: !!isPass, remark, needDirectorAudit: !!needDirectorAudit, }) :
-        this.$emit('on-ok', { id, type, isPass: !!isPass, remark, needDirectorAudit: false, });
+
+      this.$emit('on-ok', { 
+        id,
+        type,
+        remark,
+        isPass: !!isPass,
+        needDirectorAudit: type === 'manage' ? !!needDirectorAudit : false,
+      })
     },
 
     // 取消
@@ -456,13 +415,17 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.order-audit-modal {
+/deep/ .order-audit-modal {
+  .ivu-modal-content .ivu-modal-body {
+    max-height: 600px;
+    overflow-y: auto
+  }
   .ivu-table {
     td {
       border-right: 1px solid #e8eaec;
       &.border-none {
         border-bottom: 0;
-        /deep/ .ivu-table-border {
+        .ivu-table-border {
           &::after {
             width: 0;
           }

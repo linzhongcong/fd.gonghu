@@ -83,7 +83,7 @@
             <Row>
               <Col :md="8">
                 <FormItem label="门店类型：">
-                  <Input :value="formatType(detailData.type)" readonly/>
+                  <Input :value="detailData.type" readonly/>
                 </FormItem>
               </Col>
               <Col :md="8">
@@ -388,24 +388,6 @@ export default {
           break;
         case 'return':
           temp = '退回'
-          break;
-        default:
-          break;
-      }
-      return temp
-    },
-
-    formatType(type) {
-      let temp = ''
-      switch (type) {
-        case 'singleStore':
-          temp = '单体店'
-          break;
-        case 'regionalChain':
-          temp = '区域性连锁'
-          break;
-        case 'topChain':
-          temp = '百强连锁'
           break;
         default:
           break;

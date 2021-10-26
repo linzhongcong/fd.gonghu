@@ -1,5 +1,14 @@
 import fetch from './fetch'
 
+// 获取OA员工信息
+const oaUser = (params) => {
+  return fetch({
+    url: '/v2/employee/oa-employee',
+    method: 'GET',
+    params,
+  })
+}
+
 const user = (params) => {
   return fetch({
     url: '/v1/user',
@@ -305,7 +314,17 @@ const orderReviewList = (params) => {
 /**
  * 订单审核-详情
  * */
-const orderReviewDetails = (params) => {
+const orderReviewDetails = (id) => {
+  return fetch({
+    url: `/v1/order/${id}`,
+    method: 'get',
+  })
+}
+
+/**
+ * 订单审核-详情v2
+ * */
+ const orderReviewDetailsV2 = (params) => {
   return fetch({
     url: '/v2/order/view',
     method: 'GET',
@@ -370,7 +389,17 @@ const orderCancellation = (data) => {
 /**
  * 订单审核-删除
  * */
-const orderReviewDelete = (params) => {
+const orderReviewDelete = (id) => {
+  return fetch({
+    url: '/v1/order/' + id,
+    method: 'DELETE',
+  })
+}
+
+/**
+ * 订单审核-删除v2
+ * */
+ const orderReviewDeleteV2 = (params) => {
   return fetch({
     url: '/v2/order/delete',
     method: 'DELETE',
@@ -445,7 +474,7 @@ const orderReviewQueryContractor = (params) => {
 /**
  * 订单审核-查询商家
  * */
- const v2GetOrderContractorList = (params) => {
+ const getOrderContractorListV2 = (params) => {
   return fetch({
     url: '/v2/order/contractor-list',
     method: 'GET',
@@ -461,6 +490,17 @@ const orderReviewQueryProduct = (params) => {
     url: '/v1/order/query-product',
     method: 'GET',
     params,
+  })
+}
+
+/**
+ * 订单审核-处理
+ * */
+ const orderReviewDispose = (data) => {
+  return fetch({
+    url: '/v2/order/dispose',
+    method: 'PATCH',
+    data,
   })
 }
 
@@ -987,7 +1027,7 @@ const getContractPoliceDetail = (id) => {
 /**
  * 合同政策管理-详情v2
  */
-const v2GetContractPolicyDetail = (params) => {
+const getContractPolicyDetailV2 = (params) => {
   return fetch({
     url: '/v2/contract-policy/view',
     method: 'GET',
@@ -998,7 +1038,7 @@ const v2GetContractPolicyDetail = (params) => {
 /**
  * 合同政策管理 - 草稿详情v2
  */
- const v2GetContractPolicyDraftDetail = (params) => {
+ const getContractPolicyDraftDetailV2 = (params) => {
   return fetch({
     url: '/v2/contract-policy/draft-view',
     method: 'GET',
@@ -3300,6 +3340,7 @@ const downloadEmployeeTargetTmpl = () => {
 }
 
 export default {
+  oaUser,
   user,
   login,
   getCaptcha,
@@ -3312,16 +3353,18 @@ export default {
   informationRead,
   orderReviewList,
   orderReviewDetails,
+  orderReviewDetailsV2, // v2
   orderReviewCreate,
   orderReviewEdit,
   orderReviewDelete,
+  orderReviewDeleteV2, // v2
   orderReviewManagerAudit,
   orderReviewDirectorAudit,
   sampleOrderReviewManagerAudit,
   sampleOrderReviewDirectorAudit,
   replacementOrderReviewManagerAudit,
   orderReviewQueryContractor,
-  v2GetOrderContractorList, // v2
+  getOrderContractorListV2, // v2
   orderReviewQueryProduct,
   orderRefundList,
   orderRefundAdd,
@@ -3387,7 +3430,7 @@ export default {
   delRegularProductList, //v2
   getProductData,
   getContractPoliceDetail,
-  v2GetContractPolicyDetail, //合同政策管理 - 详情
+  getContractPolicyDetailV2, //合同政策管理 - 详情
   auditContractPolice,
   v2AuditContractPolicy, // 合同政策管理 - 审核
   contractPoliceDelete,
@@ -3609,7 +3652,8 @@ export default {
   accountDelete, //v2
   accountDetail, //2
   contractPolicyEnableStatus, // v2
-  v2GetContractPolicyDraftDetail, // v2
+  getContractPolicyDraftDetailV2, // v2
   saveContractPolicyDraft, // v2
   getContractPolicy, // v2
+  orderReviewDispose, // v2
 }

@@ -5,7 +5,7 @@ export default [
     path: '/',
     title: '订单统计',
     children: [
-      { title: '订单统计', path: '/v1/order-received/index', keepName: 'order-statistics', name:'order-management/order-statistics' }
+      { title: '订单统计', path: '/v1/order-received/index', keepName: 'order-statistics', name: 'order-management/order-statistics' }
     ]
   },
   {
@@ -31,13 +31,13 @@ export default [
         path: '/v1/manage-team/index',
         keepName: 'team-management',
         name: 'employee-management/team-management'
-      }, 
+      },
       {
         title: '排行榜管理',
         path: '/v1/user-ranking-video/index',
         keepName: 'ranking-list',
         name: 'employee-management/ranking/ranking-list'
-      }, 
+      },
       {
         title: '视频详情',
         keepName: 'ranking-video',
@@ -51,17 +51,23 @@ export default [
     name: 'field-management',
     title: '签到管理',
     children: [{
-        title: '开拓签到',
-        path: '/v1/checkin-management/index',
-        keepName: 'attendance-management',
-        name: 'field-management/attendance-management'
-      },
-      {
-        title: '动销签到',
-        path: '/v1/checkin-prettify-management/index',
-        keepName: 'checkin-prettify-management',
-        name: 'field-management/checkin-prettify-management'
-      }
+      title: '开拓签到',
+      path: '/v1/checkin-management/index',
+      keepName: 'attendance-management',
+      name: 'field-management/attendance-management'
+    },
+    {
+      title: '动销签到',
+      path: '/v1/checkin-prettify-management/index',
+      keepName: 'checkin-prettify-management',
+      name: 'field-management/checkin-prettify-management'
+    },
+    {
+      title: '补签审核',
+      path: '/v1/checkin-prettify-management/index',
+      keepName: 'retroactive-audit',
+      name: 'field-management/retroactive-audit'
+    },
     ]
   },
   {
@@ -93,6 +99,12 @@ export default [
         path: '/v2/facade/index',
         keepName: 'facade',
         name: 'contract/facade/list'
+      },
+      {
+        title: '地址审核',
+        path: '/v2/facade/index',
+        keepName: 'address-audit',
+        name: 'contract/address-audit/address-audit-list'
       },
       {
         title: '联系人',
@@ -138,11 +150,11 @@ export default [
     path: '/policy',
     title: '政策管理',
     children: [{
-        title: '供货政策',
-        path: '/v1/contract-policy-management/index',
-        keepName: 'policy',
-        name: 'policy/policy-management'
-      },
+      title: '供货政策',
+      path: '/v1/contract-policy-management/index',
+      keepName: 'policy',
+      name: 'policy/policy-management'
+    },
       // {
       //   title: '合作商政策管理',
       //   path: '/v1/partner-policy/index',
@@ -163,35 +175,35 @@ export default [
     path: '/products',
     title: '商城管理',
     children: [{
-        title: '首页设置',
-        path: '/v1/applet-home-setting/index',
-        keepName: 'home-set',
-        name: 'products/home-set'
-      },
-      {
-        title: '类目设置',
-        path: '/v1/category/index',
-        keepName: 'category',
-        name: 'products/category'
-      },
-      {
-        title: '商品设置',
-        path: '/v1/product/index',
-        keepName: 'product',
-        name: 'products/product'
-      },
-      {
-        title: '商家活动列表',
-        path: '/v1/merchant-activity-list/index',
-        keepName: 'active',
-        name: 'products/active-list'
-      },
-      {
-        title: 'WIS资讯列表',
-        path: '/v1/information-list/index',
-        keepName: 'active',
-        name: 'products/information-list'
-      }
+      title: '首页设置',
+      path: '/v1/applet-home-setting/index',
+      keepName: 'home-set',
+      name: 'products/home-set'
+    },
+    {
+      title: '类目设置',
+      path: '/v1/category/index',
+      keepName: 'category',
+      name: 'products/category'
+    },
+    {
+      title: '商品设置',
+      path: '/v1/product/index',
+      keepName: 'product',
+      name: 'products/product'
+    },
+    {
+      title: '商家活动列表',
+      path: '/v1/merchant-activity-list/index',
+      keepName: 'active',
+      name: 'products/active-list'
+    },
+    {
+      title: 'WIS资讯列表',
+      path: '/v1/information-list/index',
+      keepName: 'active',
+      name: 'products/information-list'
+    }
     ]
   },
   {
@@ -200,59 +212,59 @@ export default [
     path: '/order-management',
     title: '订单管理',
     children: [{
-        title: '订单审核',
-        path: '/v1/order/index',
-        keepName: 'review',
-        name: 'order-management/review'
-      },
-      {
-        title: '订单作废',
-        path: '/v1/order-invalid',
-        keepName: 'cancellation',
-        name: 'order-management/cancellation'
-      },
-      {
-        title: '订单草稿箱',
-        path: '/v1/order-draft/index',
-        keepName: 'review-draft',
-        name: 'order-management/review-draft'
-      },
-      {
-        title: '订单退款审核',
-        path: '/v1/order-refund/index',
-        keepName: 'refund',
-        name: 'order-management/order-refund'
-      },
-      {
-        title: '订单售后审核',
-        path: '/v1/order-service/index',
-        keepName: 'service',
-        name: 'order-management/order-service'
-      },
-      {
-        title: '外仓调货订单',
-        path: '/v1/out-warehouse/index',
-        keepName: 'the-cargo',
-        name: 'order-management/the-cargo'
-      },
-      {
-        title: '添加外仓调货订单',
-        // path: '/v1/order-received/index',
-        keepName: 'new-cargo',
-        name: 'order-management/new-cargo'
-      },
-      {
-        title: '审核',
-        // path: '/v1/order-received/index',
-        keepName: 'audit-cargo',
-        name: 'order-management/audit-cargo'
-      },
-      {
-        title: '详情',
-        // path: '/v1/order-received/index',
-        keepName: 'particulars-cargo',
-        name: 'order-management/particulars-cargo'
-      }
+      title: '订单审核',
+      path: '/v1/order/index',
+      keepName: 'review',
+      name: 'order-management/review'
+    },
+    {
+      title: '订单作废',
+      path: '/v1/order-invalid',
+      keepName: 'cancellation',
+      name: 'order-management/cancellation'
+    },
+    {
+      title: '订单草稿箱',
+      path: '/v1/order-draft/index',
+      keepName: 'review-draft',
+      name: 'order-management/review-draft'
+    },
+    {
+      title: '订单退款审核',
+      path: '/v1/order-refund/index',
+      keepName: 'refund',
+      name: 'order-management/order-refund'
+    },
+    {
+      title: '订单售后审核',
+      path: '/v1/order-service/index',
+      keepName: 'service',
+      name: 'order-management/order-service'
+    },
+    {
+      title: '外仓调货订单',
+      path: '/v1/out-warehouse/index',
+      keepName: 'the-cargo',
+      name: 'order-management/the-cargo'
+    },
+    {
+      title: '添加外仓调货订单',
+      // path: '/v1/order-received/index',
+      keepName: 'new-cargo',
+      name: 'order-management/new-cargo'
+    },
+    {
+      title: '审核',
+      // path: '/v1/order-received/index',
+      keepName: 'audit-cargo',
+      name: 'order-management/audit-cargo'
+    },
+    {
+      title: '详情',
+      // path: '/v1/order-received/index',
+      keepName: 'particulars-cargo',
+      name: 'order-management/particulars-cargo'
+    }
     ]
   },
   {
@@ -261,23 +273,23 @@ export default [
     path: '/replacement-management',
     title: '补发管理',
     children: [{
-        title: '补发订单审核',
-        path: '/v1/order-reissue/index',
-        keepName: 'replacement-review',
-        name: 'replacement-management/replacement-order-review/review'
-      },
-      {
-        title: '样品订单审核',
-        path: '/v1/order-sample/index',
-        keepName: 'sample-review',
-        name: 'replacement-management/sample-order-review/review'
-      },
-      {
-        title: '补发/样品订单作废',
-        path: '/v1/order-reissue-invalid/index',
-        keepName: 'replacement-sample-invalid',
-        name: 'replacement-management/replacement-sample-invalid'
-      }
+      title: '补发订单审核',
+      path: '/v1/order-reissue/index',
+      keepName: 'replacement-review',
+      name: 'replacement-management/replacement-order-review/review'
+    },
+    {
+      title: '样品订单审核',
+      path: '/v1/order-sample/index',
+      keepName: 'sample-review',
+      name: 'replacement-management/sample-order-review/review'
+    },
+    {
+      title: '补发/样品订单作废',
+      path: '/v1/order-reissue-invalid/index',
+      keepName: 'replacement-sample-invalid',
+      name: 'replacement-management/replacement-sample-invalid'
+    }
     ]
   },
   {
@@ -286,23 +298,23 @@ export default [
     path: '/order-receipt',
     title: '订单收款',
     children: [{
-        title: '现款现货订单',
-        path: '/v1/receipt-cash-on-delivery/index',
-        keepName: 'cash',
-        name: 'receipt/cash'
-      },
-      {
-        title: '月结订单',
-        path: '/v1/receipt-monthly/index',
-        keepName: 'month',
-        name: 'receipt/month'
-      },
-      {
-        title: '实销实结订单',
-        path: '/v1/receipt-real-sales/index',
-        keepName: 'actual',
-        name: 'receipt/actual'
-      }
+      title: '现款现货订单',
+      path: '/v1/receipt-cash-on-delivery/index',
+      keepName: 'cash',
+      name: 'receipt/cash'
+    },
+    {
+      title: '月结订单',
+      path: '/v1/receipt-monthly/index',
+      keepName: 'month',
+      name: 'receipt/month'
+    },
+    {
+      title: '实销实结订单',
+      path: '/v1/receipt-real-sales/index',
+      keepName: 'actual',
+      name: 'receipt/actual'
+    }
     ]
   },
   {
@@ -379,6 +391,11 @@ export default [
         path: '/v2/auth/permission-list',
         name: 'setting/role-permission'
       },
+      {
+        title: '票务审核人管理',
+        path: '/v2/ticket-reviewer/index',
+        name: 'setting/ticket-reviewer'
+      }
     ]
   },
   {

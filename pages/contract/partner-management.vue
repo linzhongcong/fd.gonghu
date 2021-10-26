@@ -69,6 +69,7 @@
                   style="margin-left:1px;display:inline-block">
             <Button type="primary" v-if="makeType === false" v-permission="'/v1/contractor-management/contractor-import'">导入当前excel</Button>
           </Upload>
+          <Button type="primary" @click="handleMigration" v-permission="'/v2/contractor/migration'">迁移</Button>
           <Progress v-show="isShowProgress" :percent="percentProgress"></Progress>
         </Col>
       </Row>
@@ -510,6 +511,10 @@
     <Modal v-model="imgModel.showBusinessLicenseImg">
           <img :src="imgModel.showBusinessLicenseImgUrl " v-if="imgModel.showBusinessLicenseImg" style="width: 100%">
     </Modal>
+
+    <!-- 合作商迁移 start -->
+    <ContractMigrationModal ref="contractMigrationRef" @on-success="getSearch"></ContractMigrationModal>
+    <!-- 合作商迁移 end -->
   </div>
 </template>
 
@@ -517,10 +522,14 @@
   import Cookies from 'js-cookie'
   import {SERVER_BASE_URL} from '~/api/config';
   import globalMixin from '~/plugins/mixin'
+  import ContractMigrationModal from '~/components/contract/contract-migration.vue';
 
   export default {
     name: 'partner',
     mixins: [globalMixin],
+    components: {
+      ContractMigrationModal
+    },
     data() {
       return {
         userPermissionsList: '', // 用户操作权限
@@ -1358,7 +1367,17 @@
       handleUserHasPermission(permission) {
         const limits = this.userPermissionsList.replace(/(\[)|(\])|(\")/g, '').split(',')
         return limits.some(limit => permission === limit)
-      }
+      },
+
+      /**
+       * 合作商迁移
+       */
+      handleMigration() {
+        if (this.checkList.length !== 1) return this.$Message.warning('请选择一条数据!');
+
+        const data = this.checkList[0];
+        this.$refs.contractMigrationRef.initModal({ data });
+      },
     },
     activated() {
       this.userPermissionsList = window.localStorage.getItem('permissionList') // 获取用户操作权限

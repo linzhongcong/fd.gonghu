@@ -51,6 +51,16 @@ const basicInfo = (id) => {
   })
 }
 
+/**
+ * 合作商列表 - 迁移
+ */
+ const contractorMigration = (id) => {
+  return fetch({
+    url: `/v2/contractor/migration?id=${id}`,
+    method: 'PATCH',
+  })
+}
+
 
 
 export default {
@@ -60,5 +70,6 @@ export default {
   customerAssign,
   customerEdit,
   customerExportDownload,
-  basicInfo
+  basicInfo,
+  contractorMigration,
 }

@@ -20,7 +20,7 @@ export default {
 <style lang="less" scoped>
 .row-button {
   .ivu-btn {
-    margin-right: 10px;
+    margin-right: 5px;
     &:last-child {
       margin-right: 0;
     }

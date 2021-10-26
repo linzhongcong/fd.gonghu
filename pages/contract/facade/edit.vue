@@ -169,9 +169,10 @@ export default {
         { value: 'kono', label: 'KONO' },
       ],
       typeOption: [
-        { value: 'singleStore', label: '单体店'},
-        { value: 'regionalChain', label: '区域性连锁'},
-        { value: 'topChain', label: '百强连锁'},
+        { value: '超市', label: '超市'},
+        { value: '便利店', label: '便利店'},
+        { value: 'CS店', label: 'CS店'},
+        { value: '时尚精品店', label: '时尚精品店'},
       ],
       sizeOption: [
         { value: 's', label: '小店'},

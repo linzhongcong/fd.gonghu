@@ -6,6 +6,7 @@ import orderStatisticsApi from './order-statistics-api'
 import newEmployeeDetailApi from './newemployee-detail-api'
 import contractorApi from './contractor-api'
 import rolePermission from './role-permission'
+import ticketReviewer from './ticket-reviewer'
 
 /*
 * 公共接口 => common.api.js
@@ -21,6 +22,7 @@ const API = {
   ...newEmployeeDetailApi,
   ...contractorApi,
   ...rolePermission,
+  ...ticketReviewer,
 }
 
 export default API;

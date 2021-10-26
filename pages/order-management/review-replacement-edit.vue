@@ -15,7 +15,7 @@
             <Row class="margin-bottom-10">
               <Col :md="5">付款方式：{{ paymentMethodList[orderMsg.payment_method] }}</Col>
               <Col :md="5">订单总应收：{{ orderMsg.total_order_amount }}</Col>
-              <Col :md="5">所选政策：<a @click="openPolicyDetail()">{{ orderMsg.contract_policy_name }}</a></Col>
+              <Col :md="5">供货政策：<a @click="openPolicyDetail()">{{ orderMsg.contract_policy_name }}</a></Col>
               <Col :md="5">审核通过时间：{{ orderMsg.createdAt }}</Col>
             </Row>
           </div>
@@ -121,10 +121,10 @@
                                    @on-change="changeNumber(...arguments, index, 'original')"></InputNumber>
                     </Col>
                     <Col :md="2">
-                      <Input :value="Math.round(items.not_total_value * 10000) / 10000" disabled/>
+                      <Input :value="$toFixed(items.not_total_value, 4)" disabled/>
                     </Col>
                     <Col :md="2">
-                      <Input :value="Math.round(items.not_total_price * 10000) / 10000" disabled/>
+                      <Input :value="$toFixed(items.not_total_price, 4)" disabled/>
                     </Col>
                     <Col :md="2">
                       <Input v-model="items.data.box_standard" disabled/>
@@ -180,10 +180,10 @@
                                    @on-change="changeAdditNumber(...arguments, key, index, 'original')"></InputNumber>
                     </Col>
                     <Col :md="2">
-                      <Input :value="Math.round(items.not_total_value * 10000) / 10000" disabled/>
+                      <Input :value="$toFixed(items.not_total_value, 4)" disabled/>
                     </Col>
                     <Col :md="2" v-if="key == '换购产品'">
-                      <Input :value="Math.round(items.not_total_price * 10000) / 10000" disabled/>
+                      <Input :value="$toFixed(items.not_total_price, 4)" disabled/>
                     </Col>
                     <Col :md="2">
                       <Input v-model="items.data.box_standard" disabled/>
@@ -244,10 +244,10 @@
                                    @on-change="changeNumber(...arguments, index, 'reissue')"></InputNumber>
                     </Col>
                     <Col :md="2">
-                      <Input :value="Math.round(items.total_value * 10000) / 10000" disabled/>
+                      <Input :value="$toFixed(items.total_value, 4)" disabled/>
                     </Col>
                     <Col :md="2">
-                      <Input :value="Math.round(items.total_price * 10000) / 10000" disabled/>
+                      <Input :value="$toFixed(items.total_price, 4)" disabled/>
                     </Col>
                     <Col :md="2">
                       <Input v-model="items.data.box_standard" disabled/>
@@ -300,10 +300,10 @@
                                    @on-change="changeAdditNumber(...arguments, key, index, 'reissue')"></InputNumber>
                     </Col>
                     <Col :md="2">
-                      <Input :value="Math.round(items.total_value * 10000) / 10000" disabled/>
+                      <Input :value="$toFixed(items.total_value, 4)" disabled/>
                     </Col>
                     <Col :md="2" v-if="key == '换购产品'">
-                      <Input :value="Math.round(items.total_price * 10000) / 10000" disabled/>
+                      <Input :value="$toFixed(items.total_price, 4)" disabled/>
                     </Col>
                     <Col :md="2">
                       <Input v-model="items.data.box_standard" disabled/>
@@ -329,10 +329,10 @@
             </Row>
             <Row class="margin-top-10" type="flex" justify="space-around">
               <Col :md="6">
-                <Input :value="Math.round(noAmountReceivable * 10000) / 10000" disabled/>
+                <Input :value="noAmountReceivable" disabled/>
               </Col>
               <Col :md="6">
-                <Input :value="Math.round(reissueAmountReceivable * 10000) / 10000" disabled/>
+                <Input :value="reissueAmountReceivable" disabled/>
               </Col>
               <Col :md="6">
                 <Input v-model="amountReceivable" disabled/>
@@ -365,17 +365,20 @@
       </Row>
       <Spin size="large" fix v-if="spinShow"></Spin>
     </Card>
-    <PolicyDetail ref="policyDetail"/>
+
+    <!-- 政策详情 start -->
+    <PolicyDetailModal ref="policyDetailModal"></PolicyDetailModal>
+    <!-- 政策详情 end -->
   </div>
 </template>
 <script>
   import Cookies from 'js-cookie'
   import { SERVER_BASE_URL } from '~/api/config';
-  import PolicyDetail from '../my-components/policy-detail-modal';
+  import PolicyDetailModal from '@/components/policy/policy-detail-modal.vue';
 
   export default {
     components: {
-      PolicyDetail
+      PolicyDetailModal
     },
     data() {
       return {
@@ -540,6 +543,7 @@
           delivery_mode: [{required: true, message: '请选择发货方式', trigger: 'change'}],
           contractor_addr_id: [{required: true, message: '请选择收货地址', trigger: 'change'}]
         },
+        
         discountDate: [],
         defaultList: [],
         origin_id: '',
@@ -839,30 +843,23 @@
       },
       queryProductDiscount(index) {
         if (!!this.reissueProductList[index].data.pro_id) {
-          let obj = []
-          let oriOrderProduct = this.orderMsg.orderProduct
-          this.reissueProductList.map(items => {
-            if (items.data.pro_id != '') {
-              let oriProduct = oriOrderProduct.find(ori => ori.pro_id == items.data.pro_id)
-              if(!oriProduct){
-                obj.push({pro_id: items.data.pro_id, number: items.number})
-              }
-            }
+          const productList = this.reissueProductList.map(item => {
+            return { id: item.data.pro_id, number: item.number }
           })
-          let params = {
-            pro: obj,
-            contract_policy_id: this.orderMsg.contract_policy_id
+          const params = {
+            productList,
+            contractPolicyId: this.orderMsg.contract_policy_id
           }
           this.$api.orderReviewQueryProductDiscount(params).then((res) => {
             if (res.code === 0) {
-              let resData = res.data.orderProduct; // 产品信息(折扣、数量、价格、id)
+              let resData = res.data.productList; // 产品信息(折扣、数量、价格、id)
               for (let i in this.reissueProductList) {
                 let orderProduct = this.reissueProductList[i];
-                resData.map(item => {
-                  if (item.pro_id == orderProduct.data.pro_id) {
+                resData.forEach(item => {
+                  if (item.id === orderProduct.data.pro_id) {
                     orderProduct.discount = item.discount;
-                    orderProduct.total_value = +item.product_number;
-                    orderProduct.total_price = +item.total_price;
+                    orderProduct.total_value = item.productAmount;
+                    orderProduct.total_price = item.totalPrice;
                   }
                 })
                 this.$set(this.reissueProductList, i, orderProduct);
@@ -1059,7 +1056,8 @@
         })
       },
       openPolicyDetail() {
-        this.$refs.policyDetail.getAgreeDetail(this.orderMsg.contract_policy_id)
+        const id = this.orderMsg.contract_policy_id;
+        this.$refs.policyDetailModal.initModal({ id });
       },
       isHasAdditProduct(repurchaseProduct, matchingProduct, backPoint, giftProduct) {
         if (repurchaseProduct.length > 0) {
@@ -1112,7 +1110,6 @@
             this.initAdditOrderPorduct(repurchaseProduct, matchingProduct, backPoint, giftProduct)
             // 获取收货地址
             this.addressList = contractorReceivingAddrGroup.map(item => {
-              console.log(item)
               const obj = {
                 value: item.id,
                 label: item.province + item.city + item.county + item.receiving_address,
@@ -1345,7 +1342,7 @@
         let repurchaseTotal = repurchaseList.reduce(function (prev, cur) {
           return prev + cur
         }, 0)
-        return total + repurchaseTotal
+        return this.$toFixed(total + repurchaseTotal, 4)
       },
       reissueAmountReceivable: function () {
         let list = this.reissueProductList.map((item) => {
@@ -1360,14 +1357,14 @@
         let repurchaseTotal = repurchaseList.reduce(function (prev, cur) {
           return prev + cur
         }, 0)
-        return total + repurchaseTotal
+        return this.$toFixed(total + repurchaseTotal, 4)
       },
       amountReceivable: function () { // 实际应收金额 = 补发应收金额 - 未发应收金额 ，计算结果为复数，显示为0；计算结果四舍五入保留两位小数
         let total = this.reissueAmountReceivable - this.noAmountReceivable
         if (total < 0) {
           total = 0
         }
-        return Math.round(total * 100) / 100
+        return this.$toFixed(total, 4)
       },
       reissueValue: function () {
         let list = this.reissueProductList.map((item) => {
@@ -1376,7 +1373,7 @@
         let total = list.reduce(function (prev, cur) {
           return prev + cur
         }, 0)
-        return total
+        return this.$toFixed(total, 4)
       }
     }
   }

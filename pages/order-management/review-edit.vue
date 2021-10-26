@@ -22,7 +22,7 @@
                   :loading="remoteContractLoading"
                   :remote-method="remoteContractDeb"
                   clearable
-                  @on-change="handleMerchantOnChange">
+                  @on-change="val => handleMerchantOnChange(val)">
                   <Option
                     v-for="(item, index) in contractOptions"
                     :value="item.id"
@@ -133,7 +133,7 @@
                   prop="accountNumber"
                   :rules="{required: true, message: '该选项不能为空', trigger: 'change'}"
                   :label="formData.paymentType === 'alipay' ? '支付宝账号：' : '银行账号：'">
-                  <Select v-model="formData.accountNumber" label-in-value @on-change="handleAccountNumberOnChange">
+                  <Select v-model="formData.accountNumber" filterable label-in-value @on-change="handleAccountNumberOnChange">
                     <Option
                       v-for="(item, index) in accountOptions"
                       :value="item.accountNumber || item.alipayNumber"
@@ -207,7 +207,7 @@
                     class="policy-select"
                     :loading="remotePolicyLoading"
                     v-model="formData.contractPolicyId"
-                    @on-change="handlePolicyOnChange">
+                    @on-change="val => handlePolicyOnChange(val)">
                     <Option
                       v-for="(item, index) in policyOptions"
                       :value="item.id"
@@ -304,7 +304,7 @@
                 <FormItem
                   :label-width="0"
                   :prop="`productList[${index}].number`"
-                  :rules="{ required: false, validator: validProductNumber, trigger: 'blur'}">
+                  :rules="{ required: false, validator: validProductNumber, trigger: 'change'}">
                   <InputNumber 
                     :min="1"
                     v-model="item.number"
@@ -549,6 +549,111 @@
           </div>
           <!-- 赠送区域 end -->
 
+          <!-- 返点清单 start -->
+          <div class="product margin-bottom-10">
+            <div class="sub-title">返点清单</div>
+            <!-- 头部 -->
+            <Row>
+              <Col :md="3"><div class="product-title">产品名称</div></Col>
+              <Col :md="3"><div class="product-title">条码</div></Col>
+              <Col :md="2"><div class="product-title">规格</div></Col>
+              <Col :md="2"><div class="product-title">单位</div></Col>
+              <Col :md="2"><div class="product-title">零售价</div></Col>
+              <Col :md="2"><div class="product-title">订货数量</div></Col>
+              <Col :md="2"><div class="product-title">货值</div></Col>
+              <Col :md="2"><div class="product-title">订货应收</div></Col>
+              <Col :md="2"><div class="product-title">箱规</div></Col>
+            </Row>
+            <!-- 内容 -->
+            <Row v-for="(item, index) in formData.backPointProductList" :key="`formData.backPointProductList${index}`">
+              <!-- 产品名称 -->
+              <Col :md="3">
+                <FormItem :label-width="0">
+                  <Select
+                    v-model="item.id"
+                    clearable
+                    filterable
+                    :loading="remoteProductLoading"
+                    :remote-method="remoteProductDeb"
+                    :disabled="!formData.contractPolicyId"
+                    @on-change="val => handleBackPointProductOnChange(val, item, index)">
+                    <Option
+                      v-for="(pOption, pIndex) in productOptions"
+                      :value="pOption.pro_id"
+                      :label="pOption.pro_name"
+                      :key="`${index}backPoint-ProductOptions${pIndex}`">
+                      </Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <!-- 条码 -->
+              <Col :md="3">
+                <FormItem :label-width="0">
+                  <Poptip trigger="hover" :disabled="!item.barcode" :content="item.barcode">
+                    <Input :value="item.barcode" disabled />
+                  </Poptip>
+                </FormItem>
+              </Col>
+              <!-- 规格 -->
+              <Col :md="2">
+                <FormItem :label-width="0">
+                  <Input :value="item.standard" disabled />
+                </FormItem>
+              </Col>
+              <!-- 单位 -->
+              <Col :md="2">
+                <FormItem :label-width="0">
+                  <Input :value="item.unit" disabled />
+                </FormItem>
+              </Col>
+              <!-- 零售价 -->
+              <Col :md="2">
+                <FormItem :label-width="0">
+                  <Input :value="$toFixed(item.price, 4)" disabled />
+                </FormItem>
+              </Col>
+              <!-- 订货数量 -->
+              <Col :md="2">
+                <FormItem
+                  :label-width="0"
+                  :prop="`backPointProductList[${index}].number`"
+                  :rules="{ required: false, validator: validProductNumber, trigger: 'change'}">
+                  <InputNumber 
+                    :min="0"
+                    v-model="item.number"
+                    :disabled="!item.id"/>
+                </FormItem>
+              </Col>
+              <!-- 货值 -->
+              <Col :md="2">
+                <FormItem :label-width="0">
+                  <Poptip trigger="hover" :content="$toFixed(item.price * item.number, 4)">
+                    <Input :value="$toFixed(item.price * item.number, 4)" disabled />
+                  </Poptip>
+                </FormItem>
+              </Col>
+              <!-- 订货应收 -->
+              <Col :md="2">
+                <FormItem :label-width="0">
+                  <Poptip trigger="hover" :content="$toFixed(item.price * item.number, 4)">
+                    <Input :value="$toFixed(item.price * item.number, 4)" disabled />
+                  </Poptip>
+                </FormItem>
+              </Col>
+              <!-- 箱规 -->
+              <Col :md="2">
+                <FormItem :label-width="0">
+                  <Input :value="item.boxStandard || item.box_standard" disabled />
+                </FormItem>
+              </Col>
+              <Col :md="1">
+                <Button v-if="index === 0" :disabled="productDiscountSpin" @click="handleAddOption('backPointProductList', formData.backPointProductList)">+</Button>
+                <Button v-else :disabled="productDiscountSpin" @click="handleRemoveOption('backPointProductList', formData.backPointProductList, index)">-</Button>
+              </Col>
+            </Row>
+          </div>
+          <!-- 返点清单 end -->
+
           <!-- 金额统计 start -->
           <div class="product">
             <div class="sub-title">金额统计</div>
@@ -574,14 +679,7 @@
     </Card>
 
     <!-- 政策详情 start -->
-    <PolicyAuditModal
-      hide-auditer
-      :show="policyModalObj.show"
-      :data="policyModalObj.data"
-      :spin-loading="policyModalObj.spinLoading"
-      @on-ok="() => policyModalObj.show = false"
-      @on-cancel="policyModalObj.show = false">
-    </PolicyAuditModal>
+    <PolicyDetailModal ref="policyDetailModal"></PolicyDetailModal>
     <!-- 政策详情 end -->
   </div>  
 </template>
@@ -591,10 +689,10 @@ import Cookies from 'js-cookie';
 import { SERVER_BASE_URL } from '@/api/config';
 import { removeRepeatItem } from '@/utils/common.js'
 import { initData, validOrderFile, hasProduct } from '@/utils/order.js';
-import PolicyAuditModal from '@/components/policy/policy-audit-modal.vue';
+import PolicyDetailModal from '@/components/policy/policy-detail-modal.vue';
 
 export default {
-  components: { PolicyAuditModal },
+  components: { PolicyDetailModal },
   data() {
     return {
       detailSpinShow: false,
@@ -614,10 +712,11 @@ export default {
         paymentType: '',
         accountNumber: '',
         accountName: '',
+        orderFile: [], // 附件
         productList: [ { id: '', number: 1 } ], // 产品订单
+        backPointProductList: [ {id: '', number: 1} ], // 返点产品清单
         matchingProductList: [], // 配赠清单
         giftProductList: [], // 满赠清单
-        orderFile: [], // 附件
       },
       formDataRules: { // 表单规则
         merchantId: [{ required: true, message: '该选项不能为空', trigger: 'change' }],
@@ -667,19 +766,6 @@ export default {
       // 产品订单 - 订货数量 防抖
       productDiscountSpin: false,
       productNumerOnChangeDeb: this.$debonce(this.handleProductNumerOnChange, 500),
-
-      // 政策模态窗
-      policyModalObj: {
-        show: false,
-        spinLoading: false,
-        data: {
-          baseDiscountList: [],
-          giftDiscountList: [],
-          regularContractorList: [],
-          matchingDiscountList: [],
-          productDiscountList: [],
-        },
-      },
     }
   },
   computed: {
@@ -743,7 +829,7 @@ export default {
     async remoteContract(name) {
       this.remoteContractLoading = true;
       try {
-        let { code, data } = await this.$api.v2GetOrderContractorList({name});
+        let { code, data } = await this.$api.getOrderContractorListV2({name});
         if (code === 0) {
           this.contractOptions = data;
         }
@@ -807,17 +893,38 @@ export default {
     async getOrderDeatil(id) {
       this.detailSpinShow = true;
       try {
-        let { code, data } = await this.$api.orderReviewDetails({id});
+        let { code, data } = await this.$api.orderReviewDetailsV2({id});
         if (code === 0) {
           await this.remoteContract(data.merchantName); // 查询商家 -> 阻塞后续操作
-          data.matchingProductList = data.matchingProductList || [];
-          data.giftProductList = data.giftProductList || [];
+          await this.getContractPolicy(data.merchantId, data.merchantType);
+          const productOptions = [ ...data.productList, ...data.backPointProductList ];
+
+          !data.backPointProductList.length && (data.backPointProductList = [initData['backPointProductList']()]);
           this.formData = data;
-          this.productOptions = data.productList.reduce((pre, {id: pro_id, name: pro_name}) => (pre.push({pro_id, pro_name}), pre), []); // 产品选项
-          this.handleMerchantOnChange(data.merchantId); // 手动触发商家change事件
+          
+          this.handleMerchantOnChange(data.merchantId, false); // 手动触发商家change事件
+          this.handlePolicyOnChange(data.contractPolicyId, false); // 手动触发供货政策事件
           this.handlePaymentTypeOnChange(data.paymentType); // 手动触发收款方式change事件
+
+          this.$nextTick(() => {
+            // 产品选项
+            this.productOptions = productOptions.map(item => {
+              return {
+                pro_id: item.id,
+                pro_name: item.name,
+                unit: item.unit,
+                price: item.price,
+                barcode: item.barcode,
+                standard: item.standard,
+                boxStandard: item.boxStandard,
+                selected: true,
+              }
+            });
+          })
         }
-      } catch (error) {}
+      } catch (error) {
+        this.$Message.error('数据加载失败,请重新进入!');
+      }
       this.detailSpinShow = false;
     },
 
@@ -837,42 +944,11 @@ export default {
     },
 
     /**
-     * 获取供货政策详情
-     * @param {String} id: 政策id
-     */
-    async getPolicyDetail(id) {
-      this.policyModalObj.spinLoading = true;
-      try {
-        let { code, data } = await this.$api.v2GetContractPolicyDetail({id})
-        if (code === 0) {
-          data.matchingDiscountList = this.flatMatchingDiscountList(data.matchingDiscountList);
-          this.policyModalObj.data = data;
-        }
-      } catch (error) {}
-      this.policyModalObj.spinLoading = false;
-    },
-    // 降维配赠活动 (适用政策详情)
-    flatMatchingDiscountList(arr) {
-      let newArr = JSON.parse(JSON.stringify(arr));
-      newArr.forEach(item => {
-        let tempDeatilList = [];
-        item.detailList.forEach(dItem => {
-          let obj = dItem.productList.splice(0, 1)[0];
-          obj.matchingDenominator = dItem.matchingDenominator;
-          obj.matchingMolecule = dItem.matchingMolecule;
-          obj.firstFlag = true; // 首个数据标识
-          tempDeatilList = [ ...tempDeatilList, obj, ...dItem.productList ];
-        })
-        item.detailList = tempDeatilList;
-      });
-      return newArr;
-    },
-
-    /**
      * 商家信息 变化事件
      * @param {String} val: 选中的值
+     * @param {Boolean} request: 是否调起请求: 是/true(默认)  否/false
      */
-    handleMerchantOnChange(val) {
+    handleMerchantOnChange(val, request = true) {
       if (!val) { // 清空商家 => 清除表单
         this.$refs.form1.resetFields();
         this.formData.orderFile = [];
@@ -894,7 +970,7 @@ export default {
       this.paymentMethodOptions = merchantInfo.contractsList;
       this.contractorReceivingAddrGroupOptions = merchantInfo.contractorReceivingAddrGroup;
 
-      this.getContractPolicy(merchantInfo.id, merchantInfo.merchantType); // 获取供货政策
+      request && this.getContractPolicy(merchantInfo.id, merchantInfo.merchantType); // 获取供货政策
     },
 
     /**
@@ -952,18 +1028,18 @@ export default {
     /**
      * 供货政策 变化事件
      * @param {String} val: 选中的值
+     * @param {Boolean} autoChange: 是否自动触发change: 是/true(默认)  否/false
      */
-    handlePolicyOnChange(val) {
+    handlePolicyOnChange(val, autoChange = true) {
       const formData = this.formData;
-      if (!val) { // 清空数据
-        formData.taxDeduction = '';
-        formData.contractPolicyName = '';
-        formData.productList = [ initData['productList']() ];
+      if (autoChange) {
+        ['taxDeduction', 'contractPolicyName', 'totalOrderAmount'].forEach(key => formData[key] = '');
+        ['productList', 'backPointProductList'].forEach(key => formData[key] = [initData[key]()]);
         this.resetAllGifts();
-        return false;
-      };
+      }
+      if (!val) return false;
 
-      const { taxDeduction, policyName } = this.policyOptions.find(item => item.id === val) || {};
+      const { taxDeduction, policyName } = this.policyOptions.find(item => item.id === val) || {};   
       formData.taxDeduction = `${taxDeduction}%`;
       formData.contractPolicyName = policyName;
     },
@@ -976,17 +1052,37 @@ export default {
      */
     handleOrderProductOnChange(val, rowData, rowIndex) {
       const contractPolicyId = this.formData.contractPolicyId,
-        productList = this.formData.productList.filter(item => item.id);
-      if(!val) return !productList.length ? this.resetAllGifts(rowIndex) : this.resetProductData(rowIndex, true)
-      if (hasProduct(productList, val, 'id')) return this.resetProductData(rowIndex) && this.$Message.warning('已有相同产品');
+        formProducts = this.formData.productList,
+        productList = formProducts.filter(item => item.id);
+      
+      if(!val) return !productList.length ? this.resetAllGifts(rowIndex) : this.resetProductData(formProducts, 'productList', rowIndex, true); // 清空最后一个产品时重置需要新增一行
+      if (hasProduct(productList, val, 'id')) return this.resetProductData(formProducts, 'productList', rowIndex) && this.$Message.warning('已有相同产品');
 
-      const productInfo = this.productOptions.find(item => (item.pro_id === val) && (item.selected = true));
-      ['barcode', 'standard', 'price', 'unit'].forEach(key => rowData[key] = productInfo[key]);
-      this.productOptions = this.productOptions.filter(item => item.selected);
-    
+      this.fillProductProp(rowData, val);
       this.getProductDiscount({contractPolicyId, productList});
     },
+
+    // 返点清单产品 - 变化事件
+    handleBackPointProductOnChange(val, rowData, rowIndex) {
+      const formBackPointProducts = this.formData.backPointProductList,
+        backPointProductList = formBackPointProducts.filter(item => item.id);
+      
+      if (!val) return void this.resetProductData(formBackPointProducts, 'backPointProductList', rowIndex, true);
+      if (hasProduct(backPointProductList, val, 'id')) return this.resetProductData(formBackPointProducts, 'backPointProductList', rowIndex) && this.$Message.warning('已有相同产品');
+      
+      this.fillProductProp(rowData, val);
+    },
     
+    /**
+     * 填充产品属性： 条码/规格/单位/零售价
+     * @param {Object} rowData: 当前行数据
+     * @param {String|Number} id: 当前id
+     */
+    fillProductProp(rowData, id) {
+      const productInfo = this.productOptions.find(item => (item.pro_id === id) && (item.selected = true));
+      ['barcode', 'standard', 'price', 'unit', 'box_standard', 'boxStandard'].forEach(key => rowData[key] = productInfo[key]);
+      this.productOptions = this.productOptions.filter(item => item.selected);
+    },
 
     /**
      * 产品数量变化事件
@@ -1021,23 +1117,17 @@ export default {
      */
     handleShowPolicy(id) {
       if (!id) return false;
-      this.getPolicyDetail(id);
-      this.policyModalObj.show = true;
+
+      this.$refs.policyDetailModal.initModal({ id });
     },
 
     /**
      * 新增选项
-     * @param {String} type: 变化目标
+     * @param {String} keyName: 映射表键名
      * @param {Array} sourceArr: 原数组
      */
-    handleAddOption(type, sourceArr) {
-      switch (type) {
-        case 'productList':
-          sourceArr.push(initData['productList']());
-          break;
-        default:
-          break;
-      }
+    handleAddOption(keyName, sourceArr) {
+      sourceArr.push(initData[keyName]());
     },
 
     /**
@@ -1053,6 +1143,8 @@ export default {
           productList.splice(index, 1);
           this.$nextTick(() => this.getProductDiscount({contractPolicyId, productList}));
           break;
+        case 'backPointProductList':
+          this.formData.backPointProductList.splice(index, 1);
         default:
           break;
       }
@@ -1079,9 +1171,7 @@ export default {
      * @param {Array} fileList: 已上传文件
      */
     handleFileUploadSuccess(response, file, fileList) {
-      console.log(response)
       response.code === 0 && this.formData.orderFile.push(response.data);
-      console.log(this.formData.orderFile)
       this.fileUploading = false;
     },
 
@@ -1139,13 +1229,13 @@ export default {
 
     // 检验产品数量
     validProductNumber(rule, value, callback) {
+      typeof value == 'number' && (value = value.toString());
       if (!value) return callback(new Error('该选项不能为空'));
       callback();
     },
 
     // 校验
     validPaymentMoney(rule, value, callback) {
-      console.log(value)
       if (!value) return callback(new Error('该选项不能为空'));
       /^(([1-9]\d*)|0)(\.\d{1,4})?$/.test(value) ? callback() : callback('请输入有效金额');
     },
@@ -1184,19 +1274,20 @@ export default {
      */
     resetAllGifts(resetProductIndex = null) {
       if (resetProductIndex !== null) {
-        this.resetProductData(resetProductIndex, true);
+        this.resetProductData(this.formData.productList, 'productList', resetProductIndex, true);
       }
       ['matchingProductList', 'giftProductList'].forEach(key => this.formData[key] = []);
     },
 
     /**
-     * 重置某行产品订单数据
+     * 重置某行产品数据
+     * @param {Array} sourceArr: 源数组
+     * @param {String} keyName: 映射表键名
      * @param {Number} rowIndex: 当前行下标
      * @param {Boolean} isAdd: 是否创建一行新数据
      */
-    resetProductData(rowIndex, isAdd = false) {
-      const productList = this.formData.productList;
-      isAdd ? productList.splice(rowIndex, 1, initData['productList']()) : productList.splice(rowIndex, 1);
+    resetProductData(sourceArr, keyName, rowIndex, isAdd = false) {
+      this.$nextTick(() => isAdd ? sourceArr.splice(rowIndex, 1, initData[keyName]()) : sourceArr.splice(rowIndex, 1));
       return true;
     },
 

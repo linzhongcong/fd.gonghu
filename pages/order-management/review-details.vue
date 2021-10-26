@@ -2,7 +2,7 @@
   <div class="review-detail">
     <Card>
       <Row slot="title" type="flex" justify="end">
-        <Button @click="goBack">返回</Button>
+        <Button type="primary" @click="goBack">返回</Button>
       </Row>
       <!-- 内容 -->
       <div>
@@ -141,6 +141,13 @@
                 <Table border :columns="repertoireColumns('gift')" :data="detailData.giftProductList"></Table>
               </div>
             </div>
+            <!-- 返点清单 -->
+            <div class="repertoire">
+              <div class="repertoire-title">返点清单</div>
+              <div class="repertoire-content">
+                <Table border :columns="repertoireColumns('backPoint')" :data="detailData.backPointProductList"></Table>
+              </div>
+            </div>
             <!-- 信息 -->
             <Row class="font-blod">
               <Col :md="8">
@@ -221,6 +228,18 @@
                   <div class="row-label">{{ detailData.accountNumber }}</div>
                 </div>
               </Col>
+              <Col :md="8">
+                <div class="row">
+                  <div class="row-title">汇款日期：</div>
+                  <div class="row-label">{{ detailData.paymentDate }}</div>
+                </div>
+              </Col>
+              <Col :md="8">
+                <div class="row">
+                  <div class="row-title">汇款金额：</div>
+                  <div class="row-label">{{ detailData.paymentMoney }}</div>
+                </div>
+              </Col>
             </Row>
           </div>
         </Card>
@@ -257,14 +276,7 @@
     </Card>
 
     <!-- 政策详情 start -->
-    <PolicyAuditModal
-      hide-auditer
-      :show="policyModalObj.show"
-      :data="policyModalObj.data"
-      :spin-loading="policyModalObj.spinLoading"
-      @on-ok="() => policyModalObj.show = false"
-      @on-cancel="policyModalObj.show = false">
-    </PolicyAuditModal>
+    <PolicyDetailModal ref="policyDetailModal"></PolicyDetailModal>
     <!-- 政策详情 end -->
 
     <!-- 查看大图 -->
@@ -279,10 +291,10 @@
 
 <script>
 import { formatPaymentMethod, formatOrderFrom } from '@/utils/order.js';
-import PolicyAuditModal from '@/components/policy/policy-audit-modal.vue';
+import PolicyDetailModal from '@/components/policy/policy-detail-modal.vue';
 
 export default {
-  components: {PolicyAuditModal},
+  components: {PolicyDetailModal},
   data() {
     return {
       spinShow: false,
@@ -291,19 +303,6 @@ export default {
       // 详情数据
       detailData: {
         auditLog: [],
-      },
-
-      // 政策模态窗
-      policyModalObj: {
-        show: false,
-        spinLoading: false,
-        data: {
-          baseDiscountList: [],
-          giftDiscountList: [],
-          regularContractorList: [],
-          matchingDiscountList: [],
-          productDiscountList: [],
-        },
       },
 
       // 展示大图
@@ -317,23 +316,20 @@ export default {
   methods: {
     /**
      * 获取详情
-     * @param {Stringt} id: 订单id1
+     * @param {Stringt} id: 订单id
      */
     async getDetail(id) {
       this.spinShow = true;
       try {
-        let { code, data } = await this.$api.orderReviewDetails({id});
+        let { code, data } = await this.$api.orderReviewDetailsV2({id});
         if (code === 0) {
           data.paymentMethodText = formatPaymentMethod(data.paymentMethod);
           data.orderFromText = formatOrderFrom(data.orderFrom);
 
           this.detailData = data;
-          this.spinShow = false;
         }
-      } catch (error) {
-        this.spinShow = false;
-      }
-      
+      } catch (error) {}
+      this.spinShow = false;
     },
 
     /**
@@ -346,40 +342,6 @@ export default {
         let { code, data } = await this.$api.orderDeliveryExport({id});
         code === 0 && this.$download(data.url);
       } catch (error) {}
-    },
-
-    /**
-     * 获取供货政策详情
-     * @param {String} id: 政策id
-     */
-    async getPolicyDetail(id) {
-      this.policyModalObj.spinLoading = true;
-      try {
-        let { code, data } = await this.$api.v2GetContractPolicyDetail({id})
-        if (code === 0) {
-          data.matchingDiscountList = this.flatMatchingDiscountList(data.matchingDiscountList);
-          this.policyModalObj.data = data;
-          this.policyModalObj.spinLoading = false;
-        }
-      } catch (error) {
-        this.policyModalObj.spinLoading = false;
-      }
-    },
-    // 降维配赠活动 (适用政策详情)
-    flatMatchingDiscountList(arr) {
-      let newArr = JSON.parse(JSON.stringify(arr));
-      newArr.forEach(item => {
-        let tempDeatilList = [];
-        item.detailList.forEach(dItem => {
-          let obj = dItem.productList.splice(0, 1)[0];
-          obj.matchingDenominator = dItem.matchingDenominator;
-          obj.matchingMolecule = dItem.matchingMolecule;
-          obj.firstFlag = true; // 首个数据标识
-          tempDeatilList = [ ...tempDeatilList, obj, ...dItem.productList ];
-        })
-        item.detailList = tempDeatilList;
-      });
-      return newArr;
     },
 
     /**
@@ -452,6 +414,10 @@ export default {
         arr[5].title = '满赠数量';
         arr[6].title = '满赠货值';
       }
+      if (type === 'backPoint') {
+        arr[5].title = '返点数量';
+        arr[6].title = '返点货值';
+      }
       return arr;
     },
 
@@ -460,8 +426,7 @@ export default {
      * @param {String} id: 政策id
      */
     handleShowPolicy(id) {
-      this.getPolicyDetail(id);
-      this.policyModalObj.show = true;
+      this.$refs.policyDetailModal.initModal({ id });
     },
 
     /**

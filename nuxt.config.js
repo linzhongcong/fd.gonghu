@@ -45,7 +45,7 @@ module.exports = {
     '@/plugins/table-list',
     '@/plugins/permission',
     '@/plugins/debonce',
-    '@/plugins/to-fixed',
+    '@/utils/to-fixed',
   ],
   /*
    ** Nuxt.js modules

@@ -69,7 +69,6 @@ export default {
     // 确认
     handleOnOk() {
       this.$refs.form1.validate((valid) => {
-        console.log(valid)
         if (valid) {
           let data = JSON.parse(JSON.stringify(this.formData));
           const [ startTime, endTime ] = data.orderTime;
